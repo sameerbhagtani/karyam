@@ -12,6 +12,7 @@ const envSchema = z.object({
     NODE_ENV: z.enum(["development", "production", "test"]).default(envConstants.NODE_ENV),
     MONGO_URI: z.string().default(envConstants.MONGO_URI),
     CORS_ORIGIN: z.string().default(envConstants.CORS_ORIGIN),
+    FRONTEND_URL: z.string().default(envConstants.FRONTEND_URL),
     ACCESS_TOKEN_SECRET: z.string().default(envConstants.ACCESS_TOKEN_SECRET),
     REFRESH_TOKEN_SECRET: z.string().default(envConstants.REFRESH_TOKEN_SECRET),
     SMTP_HOST: z.string().default(envConstants.SMTP_HOST),
@@ -23,6 +24,13 @@ const envSchema = z.object({
         if (typeof val === "string") return val.toLowerCase() === "true";
         return val;
     }, z.boolean()).default(envConstants.SEND_MAIL),
+    BREVO_API_KEY: z.string().default(envConstants.BREVO_API_KEY),
+    BREVO_SENDER_EMAIL: z.string().default(envConstants.BREVO_SENDER_EMAIL),
+    BREVO_SENDER_NAME: z.string().default(envConstants.BREVO_SENDER_NAME),
+    BREVO_USE_HTTP: z.preprocess((val) => {
+        if (typeof val === "string") return val.toLowerCase() === "true";
+        return val;
+    }, z.boolean()).default(envConstants.BREVO_USE_HTTP),
     GOOGLE_CLIENT_ID: z.string().default(envConstants.GOOGLE_CLIENT_ID),
     GOOGLE_CLIENT_SECRET: z.string().default(envConstants.GOOGLE_CLIENT_SECRET),
     GOOGLE_REDIRECT_URI: z.string().url().default(envConstants.GOOGLE_REDIRECT_URI),
