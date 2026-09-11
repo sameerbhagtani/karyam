@@ -1,0 +1,77 @@
+.container {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--page-background, #09090b);
+  color: var(--foreground, #f4f4f5);
+  padding: clamp(12px, 2vw, 24px);
+  overflow-x: hidden;
+}
+
+.inner {
+  width: 100%;
+  max-width: 1480px;
+  min-height: calc(100vh - clamp(24px, 4vw, 48px));
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: clamp(16px, 2.5vw, 36px);
+  align-items: stretch;
+}
+
+/* When video is on the right (Signup) */
+.videoRight .inner {
+  grid-template-columns: 1fr 1.15fr;
+}
+
+.videoRight .videoSlot {
+  order: 2;
+}
+
+.videoRight .formSlot {
+  order: 1;
+}
+
+/* When video is on the left (Login) */
+.videoLeft .videoSlot {
+  order: 1;
+}
+
+.videoLeft .formSlot {
+  order: 2;
+}
+
+.videoSlot {
+  display: flex;
+  height: 100%;
+  min-height: 580px;
+}
+
+.formSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: clamp(24px, 3.5vw, 48px);
+}
+
+@media (max-width: 1040px) {
+  .inner,
+  .videoRight .inner {
+    grid-template-columns: 1fr;
+    min-height: auto;
+    gap: 24px;
+  }
+
+  /* On mobile/tablets, always show form first, video second (or as desired) */
+  .videoSlot {
+    order: 2 !important;
+    min-height: 380px;
+  }
+
+  .formSlot {
+    order: 1 !important;
+    padding: 16px 8px;
+  }
+}

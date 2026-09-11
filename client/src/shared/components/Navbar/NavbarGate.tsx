@@ -1,8 +1,9 @@
 import { useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import Navbar from './Navbar'
 
 export default function NavbarGate() {
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '/'
+  const { pathname } = useLocation()
   const hiddenOnRoutes = new Set(['/login', '/signup', '/create'])
   const isDashboardRoute = pathname.startsWith('/dashboard')
   const isPublicSiteRoute = pathname.startsWith('/site')

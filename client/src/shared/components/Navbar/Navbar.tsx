@@ -35,9 +35,12 @@ const secondaryItems: NavItem[] = [
   { label: 'Support', href: '/docs' },
 ]
 
+import { useLocation, Link } from 'react-router-dom'
+import { useAuth } from '@/shared/context/useAuth'
+
 export default function Navbar() {
-  const pathname = typeof window !== 'undefined' ? window.location.pathname : '/'
-  const isAuthenticated = false
+  const { pathname } = useLocation()
+  const { isAuthenticated, user } = useAuth()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -45,7 +48,7 @@ export default function Navbar() {
   const drawerRef = useRef<HTMLElement | null>(null)
   const menuItemRefs = useRef<(HTMLElement | null)[]>([])
   const accountItem: NavItem = isAuthenticated
-    ? { label: 'Dashboard', href: '/dashboard' }
+    ? { label: user?.name ? user.name.split(' ')[0] : 'Dashboard', href: '/dashboard' }
     : { label: 'Get Started', href: '/signup' }
 
   useEffect(() => {
@@ -188,14 +191,14 @@ export default function Navbar() {
               ))}
             </div>
 
-            <a
+            <Link
               className={styles.logoLink}
-              href="/"
+              to="/"
               aria-label="CONCH home"
               data-nav-logo-target="primary"
             >
               <Logo revealOnHover />
-            </a>
+            </Link>
 
             <div className={styles.links}>
               {navItems.slice(2).map((item) => (
@@ -217,10 +220,10 @@ export default function Navbar() {
           </button>
 
           <div className={styles.actions}>
-            <a className={styles.action} href={accountItem.href}>
+            <Link className={styles.action} to={accountItem.href}>
               {accountItem.label}
               <ArrowRightIcon className={styles.inlineIcon} />
-            </a>
+            </Link>
           </div>
         </nav>
       </header>
