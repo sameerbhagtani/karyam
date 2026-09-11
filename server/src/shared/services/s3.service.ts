@@ -1,4 +1,9 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+    S3Client,
+    PutObjectCommand,
+    HeadBucketCommand,
+    CreateBucketCommand,
+} from "@aws-sdk/client-s3";
 import fs from "node:fs/promises";
 import path from "node:path";
 import env from "../config/env.config.js";
@@ -9,26 +14,81 @@ class S3Service {
     private bucketName: string;
     private isConfigured: boolean;
 
+    private bucketCreated: boolean = false;
+    private isCustomEndpoint: boolean = false;
+
     constructor() {
         this.bucketName = env.AWS_S3_BUCKET_NAME || "karyam-uploads";
-        this.isConfigured = Boolean(env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY);
+
+        const accessKeyId =
+            env.AWS_ACCESS_KEY_ID ||
+            process.env.MINIO_ACCESS_KEY ||
+            process.env.MINIO_ROOT_USER ||
+            "";
+
+        const secretAccessKey =
+            env.AWS_SECRET_ACCESS_KEY ||
+            process.env.MINIO_SECRET_KEY ||
+            process.env.MINIO_ROOT_PASSWORD ||
+            "";
+
+        const endpoint =
+            env.AWS_ENDPOINT ||
+            (process.env.MINIO_ENDPOINT
+                ? `http://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT || 9000}`
+                : undefined);
+
+        this.isCustomEndpoint = Boolean(endpoint);
+        this.isConfigured = Boolean(accessKeyId && secretAccessKey);
 
         if (this.isConfigured) {
             this.client = new S3Client({
                 region: env.AWS_REGION || "us-east-1",
                 credentials: {
-                    accessKeyId: env.AWS_ACCESS_KEY_ID,
-                    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
+                    accessKeyId,
+                    secretAccessKey,
                 },
-                ...(env.AWS_ENDPOINT ? { endpoint: env.AWS_ENDPOINT, forcePathStyle: true } : {}),
+                ...(endpoint ? { endpoint, forcePathStyle: true } : {}),
             });
+            logger.info(
+                { endpoint: endpoint || "AWS cloud standard", bucket: this.bucketName },
+                "S3/MinIO client initialized successfully."
+            );
         } else {
-            logger.warn("AWS S3 credentials not fully configured; using local storage fallback.");
+            logger.warn("S3/MinIO credentials not fully configured; using local storage fallback.");
+        }
+    }
+
+    private async ensureBucket(): Promise<void> {
+        // Only needed for local custom endpoints (like MinIO/LocalStack)
+        if (!this.isCustomEndpoint || this.bucketCreated || !this.client) return;
+        this.bucketCreated = true;
+
+        try {
+            await this.client.send(new HeadBucketCommand({ Bucket: this.bucketName }));
+        } catch (err: unknown) {
+            const error = err as { name?: string; $metadata?: { httpStatusCode?: number } };
+            const isNotFound =
+                error.name === "NotFound" ||
+                error.name === "NoSuchBucket" ||
+                error.$metadata?.httpStatusCode === 404;
+
+            if (isNotFound) {
+                try {
+                    await this.client.send(new CreateBucketCommand({ Bucket: this.bucketName }));
+                    logger.info({ bucket: this.bucketName }, "Created bucket in S3/MinIO storage.");
+                    this.bucketCreated = true;
+                } catch (createErr) {
+                    logger.warn({ createErr }, "Could not auto-create bucket; will attempt upload anyway.");
+                }
+            }
         }
     }
 
     async uploadFile(key: string, buffer: Buffer, mimeType: string): Promise<string> {
         if (this.isConfigured && this.client) {
+            await this.ensureBucket();
+
             const command = new PutObjectCommand({
                 Bucket: this.bucketName,
                 Key: key,

@@ -1,9 +1,9 @@
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { MistralAIEmbeddings } from "@langchain/mistralai";
 import { Pinecone } from "@pinecone-database/pinecone";
 import env from "../config/env.config.js";
 import logger from "../config/logger.config.js";
 import InterviewSessionDao from "../dao/interviewSession.dao.js";
+import mistralManager from "./mistralManager.service.js";
 
 interface ChunkRecord {
     text: string;
@@ -14,19 +14,11 @@ interface ChunkRecord {
 export class VectorService {
     private sessionDao: InterviewSessionDao;
     private pineconeClient: Pinecone | null = null;
-    private embeddings: MistralAIEmbeddings | null = null;
     private indexName: string;
 
     constructor() {
         this.sessionDao = new InterviewSessionDao();
         this.indexName = env.PINECONE_INDEX_NAME || "karyam-index";
-
-        if (env.MISTRAL_API_KEY) {
-            this.embeddings = new MistralAIEmbeddings({
-                apiKey: env.MISTRAL_API_KEY,
-                model: "mistral-embed",
-            });
-        }
 
         if (env.PINECONE_API_KEY) {
             this.pineconeClient = new Pinecone({
@@ -64,18 +56,18 @@ export class VectorService {
             const allChunks = [...resumeChunks, ...jdChunks];
 
             // 2. Check if external services are configured
-            if (!this.embeddings || !this.pineconeClient || !env.PINECONE_API_KEY || !env.MISTRAL_API_KEY) {
+            if (!mistralManager.hasKeys() || !this.pineconeClient || !env.PINECONE_API_KEY) {
                 logger.warn(
                     { sessionId },
-                    "MISTRAL_API_KEY or PINECONE_API_KEY is not configured. Stubbing vector upsert and transitioning session to 'ready'."
+                    "Mistral API keys or PINECONE_API_KEY is not configured. Stubbing vector upsert and transitioning session to 'ready'."
                 );
                 await this.sessionDao.updateSessionStatus(sessionId, "ready");
                 return;
             }
 
-            // 3. Generate embeddings using Mistral via LangChain
+            // 3. Generate embeddings using Mistral via LangChain with automatic key rotation
             const textsToEmbed = allChunks.map((c) => c.text);
-            const vectors = await this.embeddings.embedDocuments(textsToEmbed);
+            const vectors = await mistralManager.embedDocuments(textsToEmbed);
 
             // 4. Upsert into Pinecone under session-scoped namespace
             const index = this.pineconeClient.index(this.indexName);

@@ -1,46 +1,65 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  server:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    env_file:
-      - ./server/.env
-    environment:
-      - PORT=5000
-      - MONGODB_URI=mongodb://mongodb:27017/karya
-    volumes:
-      - ./server:/app/server
-      - ./scripts:/app/scripts
-      - /app/server/node_modules
-    command: node /app/scripts/watch-package.js server
-    depends_on:
-      - mongodb
-    restart: always
+    server:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+        env_file:
+            - ./server/.env
+        environment:
+            - PORT=5000
+            - MONGODB_URI=mongodb://mongodb:27017/karya
+            - MINIO_ENDPOINT=minio
+            - MINIO_PORT=9000
+            - MINIO_ACCESS_KEY=minioadmin
+            - MINIO_SECRET_KEY=minioadmin
+        volumes:
+            - ./server:/app/server
+            - ./scripts:/app/scripts
+            - /app/server/node_modules
+        command: node /app/scripts/watch-package.js server
+        depends_on:
+            - mongodb
+            - minio
+        restart: always
 
-  client:
-    image: node:20-alpine
-    working_dir: /app/client
-    ports:
-      - "5173:5173"
-    volumes:
-      - ./client:/app/client
-      - ./scripts:/app/scripts
-      - /app/client/node_modules
-    command: node /app/scripts/watch-package.js client
-    restart: always
+    client:
+        image: node:20-alpine
+        working_dir: /app/client
+        ports:
+            - "5173:5173"
+        volumes:
+            - ./client:/app/client
+            - ./scripts:/app/scripts
+            - /app/client/node_modules
+        command: node /app/scripts/watch-package.js client
+        restart: always
 
-  mongodb:
-    image: mongo:latest
-    command: mongod --quiet
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    restart: always
+    mongodb:
+        image: mongo:latest
+        command: mongod --quiet
+        ports:
+            - "27017:27017"
+        volumes:
+            - mongodb_data:/data/db
+        restart: always
+
+    minio:
+        image: minio/minio:latest
+        ports:
+            - "9000:9000"
+            - "9001:9001"
+        environment:
+            MINIO_ROOT_USER: minioadmin
+            MINIO_ROOT_PASSWORD: minioadmin
+        volumes:
+            - minio_data:/data
+        command: server /data --console-address ":9001"
+        restart: always
 
 volumes:
-  mongodb_data:
+    mongodb_data:
+    minio_data:
