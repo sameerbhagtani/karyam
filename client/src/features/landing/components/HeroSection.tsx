@@ -1,31 +1,31 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import Image from "@/shared/components/Image/Image";
-import { orbitImages, orbitRings } from "../data/landingContent";
-import styles from "./HeroSection.module.css";
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap'
+import Image from '@/shared/components/Image/Image'
+import { orbitImages, orbitRings } from '../data/landingContent'
+import styles from './HeroSection.module.css'
 
 export default function HeroSection() {
-  const heroRef = useRef(null);
-  const cardRefs = useRef([]);
-  const speedRef = useRef(1);
+  const heroRef = useRef<HTMLElement | null>(null)
+  const cardRefs = useRef<(HTMLElement | null)[]>([])
+  const speedRef = useRef<{ current: number }>({ current: 1 })
 
   useEffect(() => {
-    const hero = heroRef.current;
+    const hero = heroRef.current
 
     if (!hero) {
-      return undefined;
+      return undefined
     }
 
-    let removeOrbitTicker = () => {};
+    let removeOrbitTicker = () => {}
 
     const context = gsap.context(() => {
       gsap.set(cardRefs.current, {
-        transformOrigin: "50% 100%",
-      });
+        transformOrigin: '50% 100%',
+      })
 
       cardRefs.current.forEach((card, index) => {
         if (!card) {
-          return;
+          return
         }
 
         gsap.fromTo(
@@ -41,35 +41,35 @@ export default function HeroSection() {
             rotate: orbitImages[index].rotate,
             duration: 1.15,
             delay: index * 0.045,
-            ease: "expo.out",
+            ease: 'expo.out',
           },
-        );
-      });
+        )
+      })
 
-      const orbitState = orbitRings.map(() => 0);
+      const orbitState = orbitRings.map(() => 0)
 
       const renderOrbit = () => {
-        const viewportWidth = window.innerWidth;
-        const mobileOrbitScale = viewportWidth <= 480 ? 2.05 : viewportWidth <= 760 ? 1.72 : 1;
+        const viewportWidth = window.innerWidth
+        const mobileOrbitScale = viewportWidth <= 480 ? 2.05 : viewportWidth <= 760 ? 1.72 : 1
 
         orbitRings.forEach((ring, ringIndex) => {
-          const degreesPerSecond = (360 / ring.duration) * ring.direction * speedRef.current;
+          const degreesPerSecond = (360 / ring.duration) * ring.direction * speedRef.current.current
           orbitState[ringIndex] =
-            (orbitState[ringIndex] + (degreesPerSecond * gsap.ticker.deltaRatio(60)) / 60) % 360;
-        });
+            (orbitState[ringIndex] + (degreesPerSecond * gsap.ticker.deltaRatio(60)) / 60) % 360
+        })
 
         orbitImages.forEach((image) => {
-          const card = cardRefs.current[image.index];
+          const card = cardRefs.current[image.index]
 
           if (!card) {
-            return;
+            return
           }
 
-          const angle = image.angle + orbitState[image.ring];
-          const radians = (angle * Math.PI) / 180;
-          const radius = (image.radius / 100) * viewportWidth * mobileOrbitScale;
-          const x = Math.cos(radians) * radius;
-          const y = Math.sin(radians) * radius;
+          const angle = image.angle + orbitState[image.ring]
+          const radians = (angle * Math.PI) / 180
+          const radius = (image.radius / 100) * viewportWidth * mobileOrbitScale
+          const x = Math.cos(radians) * radius
+          const y = Math.sin(radians) * radius
 
           gsap.set(card, {
             x,
@@ -77,35 +77,35 @@ export default function HeroSection() {
             xPercent: -50,
             yPercent: -50,
             rotation: angle + 90 + image.rotate,
-          });
-        });
-      };
+          })
+        })
+      }
 
-      gsap.ticker.add(renderOrbit);
-      renderOrbit();
+      gsap.ticker.add(renderOrbit)
+      renderOrbit()
 
       removeOrbitTicker = () => {
-        gsap.ticker.remove(renderOrbit);
-      };
-    }, hero);
+        gsap.ticker.remove(renderOrbit)
+      }
+    }, hero)
 
     return () => {
-      removeOrbitTicker();
-      context.revert();
-    };
-  }, []);
+      removeOrbitTicker()
+      context.revert()
+    }
+  }, [])
 
   const boostOrbit = () => {
-    gsap.killTweensOf(speedRef);
-    speedRef.current = 4.2;
+    gsap.killTweensOf(speedRef.current)
+    speedRef.current.current = 4.2
 
-    gsap.to(speedRef, {
+    gsap.to(speedRef.current, {
       current: 1,
       duration: 1.2,
       delay: 0.35,
-      ease: "power3.out",
-    });
-  };
+      ease: 'power3.out',
+    })
+  }
 
   return (
     <section className={styles.hero} ref={heroRef} aria-label="CONCH inspiration orbit">
@@ -119,12 +119,14 @@ export default function HeroSection() {
                   className={`${styles.card} ${styles[`depth${image.depth}`]}`}
                   key={image.alt}
                   ref={(node) => {
-                    cardRefs.current[image.index] = node;
+                    cardRefs.current[image.index] = node
                   }}
-                  style={{
-                    "--angle": `${image.angle}deg`,
-                    "--radius": `${image.radius}vw`,
-                  }}
+                  style={
+                    {
+                      '--angle': `${image.angle}deg`,
+                      '--radius': `${image.radius}vw`,
+                    } as React.CSSProperties
+                  }
                 >
                   <div className={`${styles.tile} ${styles[image.fit]}`}>
                     <Image
@@ -150,5 +152,5 @@ export default function HeroSection() {
         </div>
       </div>
     </section>
-  );
+  )
 }

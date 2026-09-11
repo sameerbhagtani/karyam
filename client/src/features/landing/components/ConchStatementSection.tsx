@@ -1,150 +1,155 @@
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import vectorMark from "@/assets/svg/Vector 1.svg";
-import ConchModelViewer from "./ConchModelViewer";
-import styles from "./ConchStatementSection.module.css";
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import vectorMark from '@/assets/svg/Vector 1.svg'
+import ConchModelViewer from './ConchModelViewer'
+import styles from './ConchStatementSection.module.css'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
+
+interface MarkSvgState {
+  path: string
+  viewBox: string
+}
 
 export default function ConchStatementSection() {
-  const sectionRef = useRef(null);
-  const pathRef = useRef(null);
-  const deployRef = useRef(null);
-  const actionRef = useRef(null);
-  const easeRef = useRef(null);
-  const headlineRef = useRef(null);
-  const [markSvg, setMarkSvg] = useState({ path: "", viewBox: "0 0 354 540" });
-  const [touchedTargets, setTouchedTargets] = useState([]);
+  const sectionRef = useRef<HTMLElement | null>(null)
+  const pathRef = useRef<SVGPathElement | null>(null)
+  const deployRef = useRef<HTMLSpanElement | null>(null)
+  const actionRef = useRef<HTMLSpanElement | null>(null)
+  const easeRef = useRef<HTMLSpanElement | null>(null)
+  const headlineRef = useRef<HTMLSpanElement | null>(null)
+  const [markSvg, setMarkSvg] = useState<MarkSvgState>({ path: '', viewBox: '0 0 354 540' })
+  const [touchedTargets, setTouchedTargets] = useState<boolean[]>([])
 
   useEffect(() => {
-    const markUrl = typeof vectorMark === "string" ? vectorMark : vectorMark.src;
+    const markUrl = typeof vectorMark === 'string' ? vectorMark : (vectorMark as { src: string }).src
 
     fetch(markUrl)
       .then((response) => response.text())
       .then((svgText) => {
-        const svgDocument = new DOMParser().parseFromString(svgText, "image/svg+xml");
-        const svg = svgDocument.querySelector("svg");
-        const path = svgDocument.querySelector("path");
+        const svgDocument = new DOMParser().parseFromString(svgText, 'image/svg+xml')
+        const svg = svgDocument.querySelector('svg')
+        const path = svgDocument.querySelector('path')
 
         if (!path) {
-          return;
+          return
         }
 
         setMarkSvg({
-          path: path.getAttribute("d") ?? "",
-          viewBox: svg?.getAttribute("viewBox") ?? "0 0 354 540",
-        });
+          path: path.getAttribute('d') ?? '',
+          viewBox: svg?.getAttribute('viewBox') ?? '0 0 354 540',
+        })
       })
-      .catch(() => {});
-  }, []);
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
-    const section = sectionRef.current;
-    const path = pathRef.current;
+    const section = sectionRef.current
+    const path = pathRef.current
 
     if (!section || !path || !markSvg.path) {
-      return undefined;
+      return undefined
     }
 
-    const pathLength = path.getTotalLength();
-    const hitTargets = [deployRef.current, actionRef.current, easeRef.current, headlineRef.current];
+    const pathLength = path.getTotalLength()
+    const hitTargets = [deployRef.current, actionRef.current, easeRef.current, headlineRef.current]
 
     const context = gsap.context(() => {
       gsap.set(path, {
-        stroke: "#2563eb",
+        stroke: '#2563eb',
         strokeDasharray: pathLength,
         strokeDashoffset: pathLength,
-      });
+      })
 
       gsap.set(`.${styles.drawingMark}`, {
         yPercent: 34,
-      });
+      })
 
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: section,
-          start: "top 50%",
+          start: 'top 50%',
           endTrigger: headlineRef.current,
-          end: "center center",
+          end: 'center center',
           scrub: 0.02,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             if (self.direction < 0) {
-              setTouchedTargets([]);
-              return;
+              setTouchedTargets([])
+              return
             }
 
-            gsap.set(path, { stroke: "#2563eb" });
+            gsap.set(path, { stroke: '#2563eb' })
 
-            const matrix = path.getScreenCTM();
+            const matrix = path.getScreenCTM()
 
             if (!matrix) {
-              return;
+              return
             }
 
-            const touchPadding = Math.max(10, window.innerWidth * 0.012);
-            const currentLength = pathLength * self.progress;
-            const sampleStart = 0;
-            const sampleStep = Math.max(pathLength * 0.006, 10);
+            const touchPadding = Math.max(10, window.innerWidth * 0.012)
+            const currentLength = pathLength * self.progress
+            const sampleStart = 0
+            const sampleStep = Math.max(pathLength * 0.006, 10)
             const nextTouchedTargets = hitTargets.map((target) => {
               if (!target) {
-                return false;
+                return false
               }
 
-              const bounds = target.getBoundingClientRect();
+              const bounds = target.getBoundingClientRect()
 
               for (let sample = sampleStart; sample <= currentLength; sample += sampleStep) {
-                const point = path.getPointAtLength(sample);
-                const screenPoint = new DOMPoint(point.x, point.y).matrixTransform(matrix);
+                const point = path.getPointAtLength(sample)
+                const screenPoint = new DOMPoint(point.x, point.y).matrixTransform(matrix)
                 const isTouching =
                   screenPoint.x >= bounds.left - touchPadding &&
                   screenPoint.x <= bounds.right + touchPadding &&
                   screenPoint.y >= bounds.top - touchPadding &&
-                  screenPoint.y <= bounds.bottom + touchPadding;
+                  screenPoint.y <= bounds.bottom + touchPadding
 
                 if (isTouching) {
-                  return true;
+                  return true
                 }
               }
 
-              return false;
-            });
+              return false
+            })
 
             setTouchedTargets((currentTargets) =>
               nextTouchedTargets.map((isTouched, index) => isTouched || currentTargets[index]),
-            );
+            )
           },
           onLeaveBack: () => {
-            setTouchedTargets([]);
+            setTouchedTargets([])
           },
         },
-      });
+      })
 
       timeline.to(
         `.${styles.drawingMark}`,
         {
           yPercent: -24,
-          ease: "none",
+          ease: 'none',
         },
         0,
-      );
+      )
 
       timeline.to(
         path,
         {
           strokeDashoffset: 0,
-          ease: "none",
+          ease: 'none',
         },
         0,
-      );
-    }, section);
+      )
+    }, section)
 
     return () => {
-      context.revert();
-      setTouchedTargets([]);
-    };
-  }, [markSvg.path]);
+      context.revert()
+      setTouchedTargets([])
+    }
+  }, [markSvg.path])
 
   return (
     <section
@@ -173,9 +178,9 @@ export default function ConchStatementSection() {
             We help teams <strong>build</strong> sharp, responsive websites and
             <span
               ref={deployRef}
-              className={`${styles.highlight} ${touchedTargets[0] ? styles.highlightTouched : ""}`}
+              className={`${styles.highlight} ${touchedTargets[0] ? styles.highlightTouched : ''}`}
             >
-              {" "}
+              {' '}
               deploy them with confidence
             </span>
             .
@@ -186,9 +191,9 @@ export default function ConchStatementSection() {
             real cause, and turn confusing failures into
             <span
               ref={actionRef}
-              className={`${styles.highlight} ${touchedTargets[1] ? styles.highlightTouched : ""}`}
+              className={`${styles.highlight} ${touchedTargets[1] ? styles.highlightTouched : ''}`}
             >
-              {" "}
+              {' '}
               clear action
             </span>
             .
@@ -200,20 +205,18 @@ export default function ConchStatementSection() {
             <span
               ref={easeRef}
               className={`${styles.highlightWide} ${
-                touchedTargets[2] ? styles.highlightTouched : ""
+                touchedTargets[2] ? styles.highlightTouched : ''
               }`}
             >
-              {" "}
+              {' '}
               move on with ease
             </span>
             .
           </p>
         </div>
 
-        <h2
-          className={styles.heroLine}
-        >
-          CONCH is a{" "}
+        <h2 className={styles.heroLine}>
+          CONCH is a{' '}
           <span
             ref={headlineRef}
             className={touchedTargets[3] ? styles.heroLineTouched : undefined}
@@ -226,5 +229,5 @@ export default function ConchStatementSection() {
         <div id="postmortem" aria-hidden="true" />
       </div>
     </section>
-  );
+  )
 }

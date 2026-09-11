@@ -1,76 +1,81 @@
-import { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Logo from "@/shared/components/Logo/Logo";
+import { useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Logo from '@/shared/components/Logo/Logo'
 import {
   ArrowRightIcon,
   InstagramIcon,
   LinkedinIcon,
   XIcon,
   YoutubeIcon,
-} from "./icons";
-import styles from "./Navbar.module.css";
+} from './icons'
+import styles from './Navbar.module.css'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
-const navItems = [
-  { label: "Docs", href: "/docs" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Start Building", href: "/create" },
-];
+interface NavItem {
+  label: string
+  href: string
+}
 
-const secondaryItems = [
-  { label: "About", href: "/about" },
-  { label: "Docs", href: "/docs" },
-  { label: "Contact", href: "/contact" },
-  { label: "Templates", href: "/create" },
-  { label: "Builder", href: "/create" },
-  { label: "Deployment", href: "/dashboard/deployments" },
-  { label: "Support", href: "/docs" },
-];
+const navItems: NavItem[] = [
+  { label: 'Docs', href: '/docs' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Start Building', href: '/create' },
+]
+
+const secondaryItems: NavItem[] = [
+  { label: 'About', href: '/about' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Templates', href: '/create' },
+  { label: 'Builder', href: '/create' },
+  { label: 'Deployment', href: '/dashboard/deployments' },
+  { label: 'Support', href: '/docs' },
+]
 
 export default function Navbar() {
-  const pathname = typeof window !== "undefined" ? window.location.pathname : "/";
-  const isAuthenticated = false;
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const overlayRef = useRef(null);
-  const drawerRef = useRef(null);
-  const menuItemRefs = useRef([]);
-  const accountItem = isAuthenticated
-    ? { label: "Dashboard", href: "/dashboard" }
-    : { label: "Get Started", href: "/signup" };
+  const pathname = typeof window !== 'undefined' ? window.location.pathname : '/'
+  const isAuthenticated = false
+  const [isScrolled, setIsScrolled] = useState(false)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const overlayRef = useRef<HTMLDivElement | null>(null)
+  const drawerRef = useRef<HTMLElement | null>(null)
+  const menuItemRefs = useRef<(HTMLElement | null)[]>([])
+  const accountItem: NavItem = isAuthenticated
+    ? { label: 'Dashboard', href: '/dashboard' }
+    : { label: 'Get Started', href: '/signup' }
 
   useEffect(() => {
     const trigger = ScrollTrigger.create({
       start: 0,
-      end: "max",
+      end: 'max',
       onUpdate: (self) => {
-        const scrollY = self.scroll();
+        const scrollY = self.scroll()
 
-        setIsScrolled(scrollY > 12);
-        setIsCollapsed(scrollY > 160 && self.direction === 1);
+        setIsScrolled(scrollY > 12)
+        setIsCollapsed(scrollY > 160 && self.direction === 1)
       },
-    });
+    })
 
-    return () => trigger.kill();
-  }, []);
+    return () => trigger.kill()
+  }, [])
 
   const openMenu = () => {
-    setIsMenuOpen(true);
-  };
+    setIsMenuOpen(true)
+  }
 
   const expandNavbar = () => {
-    setIsCollapsed(false);
-  };
+    setIsCollapsed(false)
+  }
 
   const closeMenu = () => {
     const timeline = gsap.timeline({
-      defaults: { ease: "power3.inOut" },
+      defaults: { ease: 'power3.inOut' },
       onComplete: () => setIsMenuOpen(false),
-    });
+    })
 
     timeline
       .to(menuItemRefs.current, {
@@ -85,7 +90,7 @@ export default function Navbar() {
           xPercent: -108,
           duration: 0.44,
         },
-        "-=0.06",
+        '-=0.06',
       )
       .to(
         overlayRef.current,
@@ -93,18 +98,18 @@ export default function Navbar() {
           autoAlpha: 0,
           duration: 0.3,
         },
-        "-=0.34",
-      );
-  };
+        '-=0.34',
+      )
+  }
 
   useEffect(() => {
     if (!isMenuOpen) {
-      return;
+      return
     }
 
-    menuItemRefs.current = menuItemRefs.current.filter(Boolean);
+    menuItemRefs.current = menuItemRefs.current.filter(Boolean)
 
-    const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+    const timeline = gsap.timeline({ defaults: { ease: 'power3.out' } })
 
     timeline
       .set(overlayRef.current, { autoAlpha: 0 })
@@ -117,7 +122,7 @@ export default function Navbar() {
           xPercent: 0,
           duration: 0.54,
         },
-        "-=0.18",
+        '-=0.18',
       )
       .to(
         menuItemRefs.current,
@@ -127,39 +132,39 @@ export default function Navbar() {
           duration: 0.34,
           stagger: 0.035,
         },
-        "-=0.28",
-      );
-  }, [isMenuOpen]);
+        '-=0.28',
+      )
+  }, [isMenuOpen])
 
   useEffect(() => {
     if (!isMenuOpen) {
-      return undefined;
+      return undefined
     }
 
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") {
-        closeMenu();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeMenu()
       }
-    };
+    }
 
-    document.addEventListener("keydown", onKeyDown);
-    document.body.style.overflow = "hidden";
+    document.addEventListener('keydown', onKeyDown)
+    document.body.style.overflow = 'hidden'
 
     return () => {
-      document.removeEventListener("keydown", onKeyDown);
-      document.body.style.overflow = "";
-    };
-  }, [isMenuOpen]);
+      document.removeEventListener('keydown', onKeyDown)
+      document.body.style.overflow = ''
+    }
+  }, [isMenuOpen])
 
-  if (pathname === "/create" || pathname === "/dashboard") {
-    return null;
+  if (pathname === '/create' || pathname === '/dashboard') {
+    return null
   }
 
   return (
     <>
       <header
-        className={`${styles.shell} ${isScrolled ? styles.scrolled : ""} ${
-          isCollapsed ? styles.collapsed : ""
+        className={`${styles.shell} ${isScrolled ? styles.scrolled : ''} ${
+          isCollapsed ? styles.collapsed : ''
         }`}
       >
         <nav className={styles.nav} aria-label="Primary navigation">
@@ -227,7 +232,7 @@ export default function Navbar() {
           role="presentation"
           onMouseDown={(event) => {
             if (event.target === event.currentTarget) {
-              closeMenu();
+              closeMenu()
             }
           }}
         >
@@ -257,7 +262,7 @@ export default function Navbar() {
                   href={item.href}
                   key={item.href}
                   ref={(node) => {
-                    menuItemRefs.current[index] = node;
+                    menuItemRefs.current[index] = node
                   }}
                   onClick={closeMenu}
                 >
@@ -273,7 +278,7 @@ export default function Navbar() {
               <a
                 href={accountItem.href}
                 ref={(node) => {
-                  menuItemRefs.current[navItems.length] = node;
+                  menuItemRefs.current[navItems.length] = node
                 }}
                 onClick={closeMenu}
               >
@@ -286,7 +291,7 @@ export default function Navbar() {
                   href={item.href}
                   key={item.href}
                   ref={(node) => {
-                    menuItemRefs.current[navItems.length + index + 1] = node;
+                    menuItemRefs.current[navItems.length + index + 1] = node
                   }}
                   onClick={closeMenu}
                 >
@@ -299,7 +304,7 @@ export default function Navbar() {
             <div
               className={styles.socials}
               ref={(node) => {
-                menuItemRefs.current[navItems.length + secondaryItems.length + 1] = node;
+                menuItemRefs.current[navItems.length + secondaryItems.length + 1] = node
               }}
             >
               <span>Socials</span>
@@ -342,5 +347,5 @@ export default function Navbar() {
         </div>
       ) : null}
     </>
-  );
+  )
 }

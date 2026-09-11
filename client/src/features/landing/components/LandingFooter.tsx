@@ -1,61 +1,66 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Logo from "@/shared/components/Logo/Logo";
-import styles from "./LandingFooter.module.css";
+import { useEffect, useRef } from 'react'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import Logo from '@/shared/components/Logo/Logo'
+import styles from './LandingFooter.module.css'
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger)
 
-const footerLinks = [
-  { label: "Start Building", href: "/create" },
-  { label: "Docs", href: "/docs" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
-  { label: "Incident Flow", href: "#incident-flow" },
-  { label: "Command Room", href: "#command-room" },
-  { label: "Postmortem", href: "#postmortem" },
-];
+interface FooterLink {
+  label: string
+  href: string
+}
 
-const socialLinks = [
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/bhavya-dhanwani/" },
-  { label: "Instagram", href: "https://www.instagram.com/bhavya_dhanwani__/" },
-  { label: "YouTube", href: "https://www.youtube.com/@bhavya_the_dev" },
-  { label: "X", href: "https://x.com/BhavyaDhan24029" },
-];
+const footerLinks: FooterLink[] = [
+  { label: 'Start Building', href: '/create' },
+  { label: 'Docs', href: '/docs' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+  { label: 'Incident Flow', href: '#incident-flow' },
+  { label: 'Command Room', href: '#command-room' },
+  { label: 'Postmortem', href: '#postmortem' },
+]
+
+const socialLinks: FooterLink[] = [
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/bhavya-dhanwani/' },
+  { label: 'Instagram', href: 'https://www.instagram.com/bhavya_dhanwani__/' },
+  { label: 'YouTube', href: 'https://www.youtube.com/@bhavya_the_dev' },
+  { label: 'X', href: 'https://x.com/BhavyaDhan24029' },
+]
 
 export default function LandingFooter() {
-  const footerRef = useRef(null);
-  const revealRefs = useRef([]);
+  const footerRef = useRef<HTMLElement | null>(null)
+  const revealRefs = useRef<(HTMLElement | null)[]>([])
 
   useEffect(() => {
-    const footer = footerRef.current;
+    const footer = footerRef.current
 
     if (!footer) {
-      return undefined;
+      return undefined
     }
 
     const context = gsap.context(() => {
       gsap.fromTo(
         revealRefs.current.filter(Boolean),
-        { autoAlpha: 0, y: 34, filter: "blur(10px)" },
+        { autoAlpha: 0, y: 34, filter: 'blur(10px)' },
         {
           autoAlpha: 1,
           y: 0,
-          filter: "blur(0px)",
+          filter: 'blur(0px)',
           duration: 0.85,
           stagger: 0.08,
-          ease: "power3.out",
+          ease: 'power3.out',
           scrollTrigger: {
             trigger: footer,
-            start: "top 78%",
+            start: 'top 78%',
             once: true,
           },
         },
-      );
-    }, footer);
+      )
+    }, footer)
 
-    return () => context.revert();
-  }, []);
+    return () => context.revert()
+  }, [])
 
   return (
     <footer className={styles.footer} id="docs" ref={footerRef} aria-label="CONCH footer">
@@ -63,7 +68,7 @@ export default function LandingFooter() {
         <div
           className={styles.brand}
           ref={(node) => {
-            revealRefs.current[0] = node;
+            revealRefs.current[0] = node
           }}
         >
           <Logo className={styles.logo} />
@@ -73,7 +78,7 @@ export default function LandingFooter() {
         <nav
           className={styles.linkGrid}
           ref={(node) => {
-            revealRefs.current[1] = node;
+            revealRefs.current[1] = node
           }}
           aria-label="Footer navigation"
         >
@@ -99,7 +104,7 @@ export default function LandingFooter() {
         <div
           className={styles.bottom}
           ref={(node) => {
-            revealRefs.current[2] = node;
+            revealRefs.current[2] = node
           }}
         >
           <span>© {new Date().getFullYear()} CONCH</span>
@@ -107,5 +112,5 @@ export default function LandingFooter() {
         </div>
       </div>
     </footer>
-  );
+  )
 }

@@ -21,7 +21,6 @@
     "noUnusedParameters": true,
     "erasableSyntaxOnly": false,
     "noFallthroughCasesInSwitch": true,
-    "allowJs": true,
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
