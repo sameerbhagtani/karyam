@@ -1,0 +1,16 @@
+.page {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  color: var(--foreground);
+  background: var(--page-background);
+  transition:
+    color 420ms ease,
+    background 420ms ease;
+}
+
+@media (max-width: 760px) {
+  .page {
+    min-height: 100vh;
+  }
+}

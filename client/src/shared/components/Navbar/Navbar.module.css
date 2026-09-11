@@ -1,0 +1,581 @@
+.shell {
+  --nav-bg: rgb(240 238 235 / 58%);
+  --nav-ink: var(--foreground);
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  pointer-events: none;
+  transition:
+    padding 360ms ease,
+    transform 360ms ease;
+}
+
+:global(body[data-theme="dark"]) .shell {
+  --nav-bg: rgb(7 8 9 / 62%);
+}
+
+.nav {
+  width: 100vw;
+  min-height: 112px;
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(18px, 2vw, 34px);
+  padding: 26px clamp(30px, 3.4vw, 58px);
+  color: var(--nav-ink);
+  background: var(--nav-bg);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid transparent;
+  pointer-events: auto;
+  transform-origin: center top;
+  transition:
+    min-height 360ms ease,
+    border-color 360ms ease,
+    border-radius 360ms ease,
+    background-color 360ms ease,
+    backdrop-filter 360ms ease,
+    box-shadow 360ms ease,
+    padding 360ms ease,
+    width 360ms ease;
+}
+
+.scrolled {
+  padding: 20px;
+}
+
+.scrolled .nav {
+  width: calc(100vw - 40px);
+  min-height: 88px;
+  background: rgb(240 238 235 / 88%);
+  border-color: var(--border);
+  border-radius: 32px;
+  box-shadow: 0 20px 50px rgb(13 15 15 / 10%);
+}
+
+:global(body[data-theme="dark"]) .scrolled .nav {
+  background: rgb(7 8 9 / 88%);
+}
+
+.collapsed {
+  padding-top: 18px;
+}
+
+.collapsed .nav {
+  width: 64px;
+  min-height: 64px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  padding: 0;
+  border-radius: 22px;
+  overflow: hidden;
+}
+
+.menuButton,
+.action {
+  min-height: 56px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: transparent;
+  transform: translateY(0) scale(1);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease,
+    color 220ms ease,
+    box-shadow 220ms ease;
+  will-change: transform;
+}
+
+.menuButton {
+  width: 56px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: currentColor;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.menuButton span {
+  width: 12px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition:
+    width 220ms ease,
+    transform 220ms ease;
+}
+
+.menuButton:hover,
+.menuButton:focus-visible,
+.closeButton:hover,
+.closeButton:focus-visible {
+  transform: translateY(-2px) scale(1.04);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border));
+  background: rgb(242 240 237 / 82%);
+  box-shadow: 0 16px 34px rgb(23 23 23 / 10%);
+}
+
+.menuButton:hover span:first-child,
+.menuButton:focus-visible span:first-child {
+  width: 18px;
+  transform: translateX(2px);
+}
+
+.menuButton:hover span:last-child,
+.menuButton:focus-visible span:last-child {
+  width: 18px;
+  transform: translateX(-2px);
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 4.2vw, 66px);
+  font-size: clamp(12px, 1.05vw, 15px);
+  font-weight: 760;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.links a {
+  position: relative;
+  transition:
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.links a::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -8px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0;
+  transform: scaleX(0.35);
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+.links a:hover,
+.links a:focus-visible {
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.links a:hover::after,
+.links a:focus-visible::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.logoLink {
+  display: inline-flex;
+  justify-self: center;
+}
+
+.collapsedLogoLink {
+  display: none;
+  padding: 0;
+  color: currentColor;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.navCluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(28px, 4.4vw, 72px);
+  justify-self: center;
+  min-width: 0;
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  justify-self: end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0 clamp(24px, 2.4vw, 34px);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  border-color: var(--accent);
+  font-size: clamp(12px, 1vw, 14px);
+  font-weight: 800;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.action:hover,
+.action:focus-visible {
+  transform: translateY(-2px) scale(1.035);
+  background: color-mix(in srgb, var(--accent) 88%, #171717);
+  border-color: color-mix(in srgb, var(--accent) 82%, #171717);
+  box-shadow:
+    0 16px 34px rgb(37 99 235 / 22%),
+    0 0 0 5px rgb(37 99 235 / 8%);
+}
+
+.action:hover .inlineIcon,
+.action:focus-visible .inlineIcon {
+  transform: translateX(3px);
+}
+
+.inlineIcon,
+.arrowIcon,
+.smallArrowIcon,
+.socialIcon {
+  width: 1em;
+  height: 1em;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+
+.inlineIcon {
+  font-size: 18px;
+  transition: transform 220ms ease;
+}
+
+.collapsed .menuButton,
+.collapsed .navCluster,
+.collapsed .actions {
+  display: none;
+}
+
+.collapsed .collapsedLogoLink {
+  display: inline-flex;
+}
+
+.drawerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  padding: 10px;
+  background: rgb(13 31 29 / 42%);
+  backdrop-filter: blur(5px);
+}
+
+.drawer {
+  width: min(370px, calc(100vw - 20px));
+  min-height: calc(100vh - 20px);
+  display: flex;
+  flex-direction: column;
+  padding: 38px;
+  color: var(--foreground);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 26px 80px rgb(13 15 15 / 24%);
+}
+
+.drawerHeader {
+  display: grid;
+  grid-template-columns: 56px 1fr 56px;
+  align-items: center;
+  margin-bottom: 42px;
+}
+
+.drawerHeader > :last-child {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.closeButton {
+  width: 50px;
+  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  color: currentColor;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  cursor: pointer;
+  transform: translateY(0) scale(1);
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+  will-change: transform;
+}
+
+.closeButton span {
+  position: absolute;
+  width: 13px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+  transition: transform 220ms ease;
+}
+
+.closeButton span:first-child {
+  transform: rotate(45deg);
+}
+
+.closeButton span:last-child {
+  transform: rotate(-45deg);
+}
+
+.drawerPrimary {
+  display: grid;
+  gap: 18px;
+  padding-bottom: 42px;
+  border-bottom: 1px solid var(--border);
+}
+
+.drawerPrimary a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  font-size: clamp(28px, 7vw, 31px);
+  font-weight: 400;
+  line-height: 1.05;
+  transition:
+    color 220ms ease,
+    transform 220ms ease;
+}
+
+.drawerPrimary span {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  color: var(--accent-foreground);
+  background: var(--accent);
+  border-radius: 11px;
+  font-size: 20px;
+  transition:
+    transform 220ms ease,
+    background-color 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.drawerPrimary a:hover,
+.drawerPrimary a:focus-visible {
+  color: var(--accent);
+  transform: translateX(6px);
+}
+
+.drawerPrimary a:hover span,
+.drawerPrimary a:focus-visible span {
+  transform: translateX(4px) scale(1.08);
+  box-shadow: 0 12px 26px rgb(37 99 235 / 18%);
+}
+
+.drawerSecondary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 32px;
+  padding-top: 48px;
+}
+
+.drawerSecondary a {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  font-size: 16px;
+  font-weight: 400;
+  transition:
+    color 200ms ease,
+    transform 200ms ease;
+}
+
+.drawerSecondary a:hover,
+.drawerSecondary a:focus-visible {
+  color: var(--accent);
+  transform: translateX(4px);
+}
+
+.smallArrowIcon {
+  font-size: 14px;
+}
+
+.socials {
+  min-height: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: auto;
+  padding: 18px 22px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+}
+
+.socials > span {
+  color: color-mix(in srgb, var(--foreground) 78%, transparent);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.socials div {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.socials a {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: currentColor;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 14px;
+  transform: translateY(0) scale(1);
+  transition:
+    transform 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    background-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.socials a:hover,
+.socials a:focus-visible {
+  color: var(--accent-foreground);
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: translateY(-2px) scale(1.08);
+  box-shadow: 0 12px 24px rgb(37 99 235 / 18%);
+}
+
+.menuButton:active,
+.action:active,
+.closeButton:active,
+.socials a:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.menuButton:focus-visible,
+.action:focus-visible,
+.closeButton:focus-visible,
+.links a:focus-visible,
+.drawerPrimary a:focus-visible,
+.drawerSecondary a:focus-visible,
+.socials a:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 76%, white);
+  outline-offset: 4px;
+}
+
+.socialIcon {
+  font-size: 14px;
+}
+
+@media (max-width: 1180px) {
+  .nav {
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 16px;
+    padding-inline: 28px;
+  }
+
+  .navCluster {
+    gap: 30px;
+  }
+
+  .links {
+    gap: 28px;
+    font-size: 12px;
+  }
+
+  .action {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav {
+    grid-template-columns: 56px 1fr 56px;
+    min-height: 92px;
+    gap: 14px;
+  }
+
+  .navCluster {
+    display: flex;
+    grid-column: 2;
+  }
+
+  .navCluster .links {
+    display: none;
+  }
+
+  .logoLink {
+    justify-self: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .scrolled {
+    padding: 12px;
+  }
+
+  .scrolled .nav {
+    width: calc(100vw - 24px);
+  }
+
+  .nav {
+    grid-template-columns: 52px 1fr 52px;
+    padding: 18px;
+  }
+
+  .action {
+    display: none;
+  }
+
+  .drawer {
+    padding: 38px;
+  }
+}
+
+@media (max-width: 430px) {
+  .drawerOverlay {
+    padding: 4px;
+  }
+
+  .drawer {
+    width: calc(100vw - 8px);
+    min-height: calc(100vh - 8px);
+    padding: 36px 38px;
+    border-radius: 12px;
+  }
+
+  .drawerSecondary {
+    gap: 20px 26px;
+  }
+
+  .socials {
+    padding-inline: 18px;
+  }
+}

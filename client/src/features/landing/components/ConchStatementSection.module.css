@@ -1,0 +1,225 @@
+.statementSection {
+  position: relative;
+  overflow: hidden;
+  color: #f2f0ed;
+  background: #101010;
+  isolation: isolate;
+}
+
+.drawingMark {
+  position: absolute;
+  top: 0;
+  right: clamp(-260px, -16vw, -140px);
+  z-index: 0;
+  width: clamp(920px, 94vw, 1320px);
+  height: auto;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.modelViewer {
+  position: relative;
+  z-index: 1;
+  width: 100vw;
+  max-width: none;
+  height: clamp(190px, 22vw, 340px);
+  margin: clamp(-14px, -1vw, -6px) calc(50% - 50vw) 0;
+  opacity: 1;
+  filter: drop-shadow(0 28px 54px rgb(0 0 0 / 38%));
+  isolation: isolate;
+  pointer-events: auto;
+}
+
+.modelViewer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: #101010;
+}
+
+.modelViewer canvas {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.modelViewer canvas:active {
+  cursor: grabbing;
+}
+
+.statementSection::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: transparent;
+}
+
+.statementInner {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  width: min(1240px, 100%);
+  margin: 0 auto;
+  display: grid;
+  align-content: center;
+  gap: clamp(54px, 7vw, 92px);
+  padding: clamp(120px, 13vw, 180px) 32px clamp(90px, 10vw, 140px);
+}
+
+.heroLine {
+  max-width: 1180px;
+  color: #f2f0ed;
+  font-size: clamp(58px, 9vw, 156px);
+  font-weight: 820;
+  line-height: 0.93;
+  letter-spacing: 0;
+  text-align: center;
+  text-shadow: 0 28px 70px rgb(0 0 0 / 34%);
+}
+
+.heroLine span {
+  display: block;
+  color: #323232;
+  text-shadow:
+    0 1px 0 rgb(255 255 255 / 4%),
+    0 24px 58px rgb(0 0 0 / 50%);
+  transition:
+    color 180ms ease,
+    text-shadow 220ms ease,
+    filter 220ms ease;
+}
+
+.heroLine span.heroLineTouched {
+  color: #2563eb;
+  filter: drop-shadow(0 18px 34px rgb(37 99 235 / 20%));
+  text-shadow:
+    0 0 18px rgb(37 99 235 / 32%),
+    0 22px 62px rgb(0 0 0 / 58%);
+}
+
+.copyBlock {
+  display: grid;
+  gap: clamp(34px, 4vw, 56px);
+  font-size: clamp(26px, 3.5vw, 48px);
+  font-weight: 430;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.copyBlock p {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.copyBlock strong {
+  font-weight: 820;
+}
+
+.highlight,
+.highlightWide {
+  position: relative;
+  display: inline-block;
+  z-index: 1;
+  padding: 0 0.12em;
+  color: #fff;
+  font-size: 0.88em;
+  font-weight: 820;
+  white-space: nowrap;
+}
+
+.highlight::before,
+.highlightWide::before {
+  content: "";
+  position: absolute;
+  inset: 56% -0.14em 8%;
+  z-index: -1;
+  background: #323232;
+  border-radius: 999px;
+  transform: rotate(-1.5deg);
+  box-shadow:
+    0 12px 28px rgb(0 0 0 / 28%),
+    inset 0 1px 0 rgb(255 255 255 / 7%);
+  transition:
+    background 180ms ease,
+    box-shadow 220ms ease;
+}
+
+.highlightWide::before {
+  inset-inline: -0.2em;
+  transform: rotate(1deg);
+}
+
+.highlightTouched::before {
+  background: #2563eb;
+  box-shadow:
+    0 16px 34px rgb(37 99 235 / 30%),
+    0 8px 24px rgb(0 0 0 / 24%),
+    inset 0 1px 0 rgb(255 255 255 / 16%);
+}
+
+@media (max-width: 760px) {
+  .drawingMark {
+    display: none;
+  }
+
+  .modelViewer {
+    width: 112vw;
+    height: clamp(130px, 34vw, 230px);
+    margin: -6px calc(50% - 56vw) 0;
+    opacity: 1;
+  }
+
+  .statementInner {
+    gap: 48px;
+    padding: 110px 20px 90px;
+  }
+
+  .heroLine {
+    font-size: clamp(44px, 15vw, 88px);
+  }
+
+  .heroLine span {
+    color: #2563eb;
+    filter: drop-shadow(0 18px 34px rgb(37 99 235 / 20%));
+    text-shadow:
+      0 0 18px rgb(37 99 235 / 32%),
+      0 22px 62px rgb(0 0 0 / 58%);
+  }
+
+  .highlight::before,
+  .highlightWide::before {
+    background: #2563eb;
+    box-shadow:
+      0 16px 34px rgb(37 99 235 / 30%),
+      0 8px 24px rgb(0 0 0 / 24%),
+      inset 0 1px 0 rgb(255 255 255 / 16%);
+  }
+
+  .copyBlock {
+    gap: 34px;
+    font-size: clamp(25px, 8vw, 40px);
+    line-height: 1.18;
+  }
+}
+
+@media (max-width: 420px) {
+  .statementInner {
+    padding-inline: 18px;
+  }
+
+  .copyBlock {
+    font-size: clamp(23px, 7.4vw, 32px);
+  }
+
+  .highlight,
+  .highlightWide {
+    white-space: normal;
+  }
+}

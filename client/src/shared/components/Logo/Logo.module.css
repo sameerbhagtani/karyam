@@ -1,0 +1,58 @@
+.logo {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--nav-ink, var(--foreground));
+}
+
+.mark {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  flex: 0 0 auto;
+  transition: filter 260ms ease;
+}
+
+:global(body[data-theme="dark"]) .mark {
+  filter: invert(1);
+}
+
+.wordmark {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  transform-origin: left center;
+  transition:
+    max-width 240ms ease,
+    opacity 200ms ease,
+    transform 240ms ease;
+}
+
+.compact .mark {
+  width: 28px;
+  height: 28px;
+}
+
+.revealOnHover {
+  gap: 0;
+}
+
+.revealOnHover .wordmark {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  transform: translateX(-4px) scaleX(0.88);
+}
+
+.revealOnHover:hover {
+  gap: 10px;
+}
+
+.revealOnHover:hover .wordmark,
+.revealOnHover:focus-within .wordmark {
+  max-width: 110px;
+  opacity: 1;
+  transform: translateX(0) scaleX(1);
+}

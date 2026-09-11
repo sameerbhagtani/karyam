@@ -1,0 +1,153 @@
+.loader {
+  --loader-size: min(34vw, 148px);
+  --loader-x: 50vw;
+  --loader-y: 50vh;
+  --loader-scale: 0.23;
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 22px;
+  color: var(--foreground);
+  background: var(--page-background);
+  transition:
+    background-color 420ms ease,
+    opacity 520ms ease 190ms;
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(680px, 86vw);
+  aspect-ratio: 1.7 / 1;
+  border-radius: 999px;
+  background: radial-gradient(circle at 50% 42%, rgb(37 99 235 / 18%), transparent 68%);
+  filter: blur(42px);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.markWrap {
+  position: relative;
+  width: var(--loader-size);
+  height: var(--loader-size);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  transform: translate(0, 0) scale(1);
+  transform-origin: center;
+  transition:
+    transform 760ms cubic-bezier(0.76, 0, 0.24, 1),
+    color 360ms ease;
+  will-change: transform;
+}
+
+.mark {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 20px 42px rgb(37 99 235 / 16%));
+}
+
+.mark path {
+  stroke: currentColor;
+  stroke-width: 18;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 0.22 0.08;
+  stroke-dashoffset: 0;
+  animation: dashTrace 1.15s ease-in-out infinite;
+}
+
+.mark path:nth-child(2) {
+  animation-delay: 110ms;
+}
+
+.mark path:nth-child(3) {
+  animation-delay: 220ms;
+}
+
+.progressShell {
+  position: relative;
+  z-index: 1;
+  width: min(260px, 58vw);
+  height: 5px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--foreground) 12%, transparent);
+  transition:
+    opacity 220ms ease,
+    transform 420ms ease;
+}
+
+.progressShell span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transform-origin: left center;
+  transition: transform 280ms ease;
+}
+
+.loader p {
+  position: relative;
+  z-index: 1;
+  color: color-mix(in srgb, var(--foreground) 72%, var(--accent));
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.morphing {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.morphing::before,
+.morphing .progressShell,
+.morphing p {
+  opacity: 0;
+}
+
+.morphing .progressShell {
+  transform: translateY(8px) scaleX(0.82);
+}
+
+.morphing .markWrap {
+  color: var(--foreground);
+  transform:
+    translate(calc(var(--loader-x) - 50vw), calc(var(--loader-y) - 50vh))
+    scale(var(--loader-scale));
+}
+
+.morphing .mark path {
+  animation: none;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 760ms cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+@keyframes dashTrace {
+  from {
+    stroke-dashoffset: 0;
+  }
+
+  to {
+    stroke-dashoffset: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader,
+  .markWrap,
+  .progressShell,
+  .progressShell span,
+  .mark path {
+    animation: none;
+    transition-duration: 1ms;
+  }
+}

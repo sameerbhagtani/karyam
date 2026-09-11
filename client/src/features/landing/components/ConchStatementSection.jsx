@@ -1,0 +1,230 @@
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import vectorMark from "@/assets/svg/Vector 1.svg";
+import ConchModelViewer from "./ConchModelViewer";
+import styles from "./ConchStatementSection.module.css";
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function ConchStatementSection() {
+  const sectionRef = useRef(null);
+  const pathRef = useRef(null);
+  const deployRef = useRef(null);
+  const actionRef = useRef(null);
+  const easeRef = useRef(null);
+  const headlineRef = useRef(null);
+  const [markSvg, setMarkSvg] = useState({ path: "", viewBox: "0 0 354 540" });
+  const [touchedTargets, setTouchedTargets] = useState([]);
+
+  useEffect(() => {
+    const markUrl = typeof vectorMark === "string" ? vectorMark : vectorMark.src;
+
+    fetch(markUrl)
+      .then((response) => response.text())
+      .then((svgText) => {
+        const svgDocument = new DOMParser().parseFromString(svgText, "image/svg+xml");
+        const svg = svgDocument.querySelector("svg");
+        const path = svgDocument.querySelector("path");
+
+        if (!path) {
+          return;
+        }
+
+        setMarkSvg({
+          path: path.getAttribute("d") ?? "",
+          viewBox: svg?.getAttribute("viewBox") ?? "0 0 354 540",
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    const path = pathRef.current;
+
+    if (!section || !path || !markSvg.path) {
+      return undefined;
+    }
+
+    const pathLength = path.getTotalLength();
+    const hitTargets = [deployRef.current, actionRef.current, easeRef.current, headlineRef.current];
+
+    const context = gsap.context(() => {
+      gsap.set(path, {
+        stroke: "#2563eb",
+        strokeDasharray: pathLength,
+        strokeDashoffset: pathLength,
+      });
+
+      gsap.set(`.${styles.drawingMark}`, {
+        yPercent: 34,
+      });
+
+      const timeline = gsap.timeline({
+        scrollTrigger: {
+          trigger: section,
+          start: "top 50%",
+          endTrigger: headlineRef.current,
+          end: "center center",
+          scrub: 0.02,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            if (self.direction < 0) {
+              setTouchedTargets([]);
+              return;
+            }
+
+            gsap.set(path, { stroke: "#2563eb" });
+
+            const matrix = path.getScreenCTM();
+
+            if (!matrix) {
+              return;
+            }
+
+            const touchPadding = Math.max(10, window.innerWidth * 0.012);
+            const currentLength = pathLength * self.progress;
+            const sampleStart = 0;
+            const sampleStep = Math.max(pathLength * 0.006, 10);
+            const nextTouchedTargets = hitTargets.map((target) => {
+              if (!target) {
+                return false;
+              }
+
+              const bounds = target.getBoundingClientRect();
+
+              for (let sample = sampleStart; sample <= currentLength; sample += sampleStep) {
+                const point = path.getPointAtLength(sample);
+                const screenPoint = new DOMPoint(point.x, point.y).matrixTransform(matrix);
+                const isTouching =
+                  screenPoint.x >= bounds.left - touchPadding &&
+                  screenPoint.x <= bounds.right + touchPadding &&
+                  screenPoint.y >= bounds.top - touchPadding &&
+                  screenPoint.y <= bounds.bottom + touchPadding;
+
+                if (isTouching) {
+                  return true;
+                }
+              }
+
+              return false;
+            });
+
+            setTouchedTargets((currentTargets) =>
+              nextTouchedTargets.map((isTouched, index) => isTouched || currentTargets[index]),
+            );
+          },
+          onLeaveBack: () => {
+            setTouchedTargets([]);
+          },
+        },
+      });
+
+      timeline.to(
+        `.${styles.drawingMark}`,
+        {
+          yPercent: -24,
+          ease: "none",
+        },
+        0,
+      );
+
+      timeline.to(
+        path,
+        {
+          strokeDashoffset: 0,
+          ease: "none",
+        },
+        0,
+      );
+    }, section);
+
+    return () => {
+      context.revert();
+      setTouchedTargets([]);
+    };
+  }, [markSvg.path]);
+
+  return (
+    <section
+      className={styles.statementSection}
+      id="deploy"
+      ref={sectionRef}
+      aria-label="What CONCH does"
+    >
+      <svg
+        className={styles.drawingMark}
+        viewBox={markSvg.viewBox}
+        fill="none"
+        aria-hidden="true"
+      >
+        <path
+          ref={pathRef}
+          d={markSvg.path}
+          stroke="#2563eb"
+          strokeWidth="10"
+          strokeLinecap="round"
+        />
+      </svg>
+      <div className={styles.statementInner}>
+        <div className={styles.copyBlock}>
+          <p>
+            We help teams <strong>build</strong> sharp, responsive websites and
+            <span
+              ref={deployRef}
+              className={`${styles.highlight} ${touchedTargets[0] ? styles.highlightTouched : ""}`}
+            >
+              {" "}
+              deploy them with confidence
+            </span>
+            .
+          </p>
+
+          <p>
+            Once your site is live, CONCH keeps watch. We detect errors, surface the
+            real cause, and turn confusing failures into
+            <span
+              ref={actionRef}
+              className={`${styles.highlight} ${touchedTargets[1] ? styles.highlightTouched : ""}`}
+            >
+              {" "}
+              clear action
+            </span>
+            .
+          </p>
+
+          <p>
+            From alerts to team assignment, we help the right people solve the right
+            problems faster, so your business can
+            <span
+              ref={easeRef}
+              className={`${styles.highlightWide} ${
+                touchedTargets[2] ? styles.highlightTouched : ""
+              }`}
+            >
+              {" "}
+              move on with ease
+            </span>
+            .
+          </p>
+        </div>
+
+        <h2
+          className={styles.heroLine}
+        >
+          CONCH is a{" "}
+          <span
+            ref={headlineRef}
+            className={touchedTargets[3] ? styles.heroLineTouched : undefined}
+          >
+            website command platform.
+          </span>
+        </h2>
+
+        <ConchModelViewer className={styles.modelViewer} />
+        <div id="postmortem" aria-hidden="true" />
+      </div>
+    </section>
+  );
+}

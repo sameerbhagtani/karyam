@@ -1,0 +1,101 @@
+.featuresSection {
+  position: relative;
+  min-height: 100svh;
+  overflow: clip;
+  background: #f2f0ed;
+}
+
+.featuresStage {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(64px, 9vh, 110px) 24px;
+}
+
+.featuresTitle {
+  position: relative;
+  z-index: 2;
+  max-width: min(900px, 86vw);
+  color: #2563eb;
+  font-size: clamp(72px, 10vw, 172px);
+  font-weight: 780;
+  line-height: 0.92;
+  letter-spacing: 0;
+  text-align: center;
+  will-change: transform, opacity;
+}
+
+.featuresTitle span {
+  display: block;
+}
+
+.featureCards {
+  position: absolute;
+  inset: -10vh -10vw;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.featureCard {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: var(--feature-card-width);
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 28px;
+  transform-origin: 50% 50%;
+  filter: drop-shadow(0 22px 46px rgb(23 23 23 / 12%));
+  will-change: transform, opacity;
+}
+
+.featureCard img {
+  object-fit: contain;
+}
+
+.featureCardWide {
+  aspect-ratio: 1.5 / 1;
+}
+
+.featureCardPhoto {
+  border-radius: 30px;
+}
+
+.featureCardBlue {
+  border-radius: 28px;
+}
+
+.featureCardGreen {
+  border-radius: 26px;
+}
+
+.featureCardPink {
+  border-radius: 30px;
+}
+
+@media (max-width: 760px) {
+  .featuresStage {
+    padding-inline: 18px;
+  }
+
+  .featuresTitle {
+    max-width: min(540px, 92vw);
+    font-size: clamp(50px, 15vw, 88px);
+  }
+
+  .featureCard {
+    width: min(var(--feature-card-width), 40vw);
+    border-radius: 20px;
+  }
+}
+
+@media (max-width: 420px) {
+  .featuresTitle {
+    font-size: clamp(42px, 14vw, 62px);
+  }
+
+  .featureCard {
+    width: min(var(--feature-card-width), 46vw);
+    border-radius: 16px;
+  }
+}
