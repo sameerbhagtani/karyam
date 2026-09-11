@@ -15,10 +15,12 @@ export class VectorService {
     private sessionDao: InterviewSessionDao;
     private pineconeClient: Pinecone | null = null;
     private indexName: string;
+    private indexHost?: string;
 
     constructor() {
         this.sessionDao = new InterviewSessionDao();
         this.indexName = env.PINECONE_INDEX_NAME || "karyam-index";
+        this.indexHost = env.PINECONE_HOST || process.env.PINECONE_HOST || undefined;
 
         if (env.PINECONE_API_KEY) {
             this.pineconeClient = new Pinecone({
@@ -70,7 +72,10 @@ export class VectorService {
             const vectors = await mistralManager.embedDocuments(textsToEmbed);
 
             // 4. Upsert into Pinecone under session-scoped namespace
-            const index = this.pineconeClient.index(this.indexName);
+            // If explicit index host is provided, use it directly to bypass control plane lookup
+            const index = this.indexHost
+                ? this.pineconeClient.index(this.indexName, this.indexHost)
+                : this.pineconeClient.index(this.indexName);
             const records = allChunks.map((chunk, i) => ({
                 id: `${sessionId}-${chunk.sourceType}-${chunk.chunkIndex}`,
                 values: vectors[i],

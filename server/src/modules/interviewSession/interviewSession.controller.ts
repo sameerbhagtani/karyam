@@ -6,6 +6,7 @@ import JobDescriptionDao from "../../shared/dao/jobDescription.dao.js";
 import BadRequest from "../../shared/errors/BadRequest.error.js";
 import NotFound from "../../shared/errors/NotFound.error.js";
 import vectorService from "../../shared/services/vector.service.js";
+import interviewOrchestratorService from "../../shared/services/interviewOrchestrator.service.js";
 
 export class InterviewSessionController {
     private sessionDao: InterviewSessionDao;
@@ -110,6 +111,94 @@ export class InterviewSessionController {
             advice: session.report.advice ?? "",
         });
     };
+
+    startSession = async (req: Request & { user?: Record<string, unknown> }, res: Response) => {
+        const userId = (req.user?.userId || req.user?._id) as string;
+        const id = req.params.id as string;
+
+        const session = await this.sessionDao.findSessionByIdAndUserId(id, userId);
+        if (!session) {
+            throw new NotFound("Interview session not found");
+        }
+
+        if (session.status === "completed" || session.status === "aborted") {
+            throw new BadRequest(`Cannot start interview session with status '${session.status}'`);
+        }
+
+        await interviewOrchestratorService.streamQuestionToSse(res, id, 0);
+    };
+
+    submitAnswer = async (req: Request & { user?: Record<string, unknown> }, res: Response) => {
+        const userId = (req.user?.userId || req.user?._id) as string;
+        const id = req.params.id as string;
+        const turnIndex = parseInt(req.params.turnIndex as string, 10);
+
+        if (isNaN(turnIndex) || turnIndex < 0) {
+            throw new BadRequest("turnIndex must be a non-negative integer");
+        }
+
+        const session = await this.sessionDao.findSessionByIdAndUserId(id, userId);
+        if (!session) {
+            throw new NotFound("Interview session not found");
+        }
+
+        if (session.status === "completed" || session.status === "aborted") {
+            throw new BadRequest(`Cannot submit answer for interview session with status '${session.status}'`);
+        }
+
+        if (!req.file || !req.file.buffer) {
+            throw new BadRequest("Audio file is required in 'audio' field");
+        }
+
+        const result = await interviewOrchestratorService.processCandidateAnswer(
+            id,
+            turnIndex,
+            req.file.buffer,
+            req.file.mimetype || "audio/wav",
+            req.file.originalname || "answer.wav"
+        );
+
+        return res.status(200).json(result);
+    };
+
+    getNextTurn = async (req: Request & { user?: Record<string, unknown> }, res: Response) => {
+        const userId = (req.user?.userId || req.user?._id) as string;
+        const id = req.params.id as string;
+
+        const session = await this.sessionDao.findSessionByIdAndUserId(id, userId);
+        if (!session) {
+            throw new NotFound("Interview session not found");
+        }
+
+        if (session.status === "completed" || session.status === "aborted") {
+            throw new BadRequest(`Cannot continue interview session with status '${session.status}'`);
+        }
+
+        if (session.currentTurnIndex >= session.targetLoopCount) {
+            throw new BadRequest("Maximum interview turns reached. Please end the session to view your report.");
+        }
+
+        await interviewOrchestratorService.streamQuestionToSse(res, id, session.currentTurnIndex);
+    };
+
+    endSession = async (req: Request & { user?: Record<string, unknown> }, res: Response) => {
+        const userId = (req.user?.userId || req.user?._id) as string;
+        const id = req.params.id as string;
+
+        const session = await this.sessionDao.findSessionByIdAndUserId(id, userId);
+        if (!session) {
+            throw new NotFound("Interview session not found");
+        }
+
+        const report = await interviewOrchestratorService.generateFinalReport(id);
+
+        return res.status(200).json({
+            sessionId: session._id.toString(),
+            status: "completed",
+            report,
+        });
+    };
 }
 
 export default InterviewSessionController;
+

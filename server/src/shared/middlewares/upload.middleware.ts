@@ -29,4 +29,23 @@ export const uploadSingleFile = multer({
     },
 });
 
+export const uploadAudioFile = multer({
+    storage,
+    limits: {
+        fileSize: 25 * 1024 * 1024, // 25MB max audio file size
+    },
+    fileFilter: (_req, file, cb) => {
+        const isAudio =
+            file.mimetype.startsWith("audio/") ||
+            file.originalname.toLowerCase().match(/\.(wav|webm|ogg|mp3|m4a|aac|flac)$/);
+
+        if (isAudio) {
+            cb(null, true);
+        } else {
+            cb(new BadRequest("Invalid file type. Only audio files (wav, webm, mp3, ogg, etc.) are allowed."));
+        }
+    },
+});
+
 export default uploadSingleFile;
+

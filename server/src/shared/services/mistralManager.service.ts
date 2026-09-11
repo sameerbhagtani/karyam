@@ -196,7 +196,8 @@ export class MistralManager {
             throw new Error("No Mistral API keys configured in environment.");
         }
 
-        const maxAttempts = this.keys.length;
+        const availableCount = this.keys.filter((k) => k.rateLimitedUntil <= Date.now()).length;
+        const maxAttempts = availableCount > 0 ? availableCount : 1;
         let attempts = 0;
         let lastError: unknown;
 

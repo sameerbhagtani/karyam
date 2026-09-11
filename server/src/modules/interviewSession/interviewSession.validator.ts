@@ -29,3 +29,16 @@ export const getSessionValidators = [
 
     validateErrors,
 ];
+
+export const turnAnswerValidators = [
+    param("id")
+        .isMongoId()
+        .withMessage("Session ID must be a valid MongoDB ObjectId"),
+
+    param("turnIndex")
+        .isInt({ min: 0 })
+        .withMessage("turnIndex must be a non-negative integer"),
+
+    validateErrors,
+];
+

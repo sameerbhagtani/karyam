@@ -27,6 +27,8 @@ const envConstants = {
     MISTRAL_API_KEY: "",
     PINECONE_API_KEY: "",
     PINECONE_INDEX_NAME: "karyam-index",
+    PINECONE_HOST: "",
+    SARVAM_API_KEY: "",
 } as const;
 
 export default envConstants;

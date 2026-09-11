@@ -42,6 +42,8 @@ const envSchema = z.object({
     MISTRAL_API_KEY: z.string().default(envConstants.MISTRAL_API_KEY),
     PINECONE_API_KEY: z.string().default(envConstants.PINECONE_API_KEY),
     PINECONE_INDEX_NAME: z.string().default(envConstants.PINECONE_INDEX_NAME),
+    PINECONE_HOST: z.string().default(envConstants.PINECONE_HOST),
+    SARVAM_API_KEY: z.string().default(envConstants.SARVAM_API_KEY),
 });
 
 // parsing and validating environment variables
