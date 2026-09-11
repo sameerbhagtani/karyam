@@ -138,9 +138,14 @@ class AuthController {
 			throw new Unauthorized("Session expired or invalid");
 		}
 
-		// getting the user from the session
-		const dbUserId = String((dbSession as unknown as Record<string, unknown>).userId || "");
-		const user = await this.userDao.findUserById(dbUserId);
+		// getting the user from the session (which may already be populated by sessionDao)
+		const sessionUser = (dbSession as unknown as { userId: Record<string, unknown> | string }).userId;
+		let user: Record<string, unknown> | null = null;
+		if (typeof sessionUser === "object" && sessionUser !== null && "_id" in sessionUser) {
+			user = sessionUser;
+		} else if (sessionUser) {
+			user = (await this.userDao.findUserById(String(sessionUser))) as Record<string, unknown> | null;
+		}
 
 		// checking if the user exists
 		if (!user) {
@@ -319,10 +324,10 @@ class AuthController {
 		}
 
 		// creating session for the authenticated user
-		await createSession(user!, res);
+		const { accessToken } = await createSession(user!, res);
 
-		// returning redirect to dashboard
-		return res.redirect(`${clientOrigin}/dashboard`);
+		// returning redirect to prep workspace with token
+		return res.redirect(`${clientOrigin}/prep?token=${accessToken}`);
 	};
 
 	// send password reset email

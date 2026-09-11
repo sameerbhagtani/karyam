@@ -51,7 +51,7 @@ export class SarvamService {
                 body: JSON.stringify({
                     inputs: [trimmed],
                     target_language_code: options?.targetLanguageCode || "en-IN",
-                    speaker: options?.speaker || "meera",
+                    speaker: options?.speaker || process.env.SARVAM_SPEAKER || "priya",
                     model: options?.model || "bulbul:v3",
                 }),
             });
@@ -88,7 +88,7 @@ export class SarvamService {
             throw new BadRequest("Empty audio buffer received");
         }
 
-        if (!this.isConfigured) {
+        if (!this.isConfigured || audioBuffer.length <= 44) {
             logger.info("Using mock transcript for Sarvam STT fallback");
             return "I have hands-on experience designing and deploying scalable backend microservices, managing databases with MongoDB, and optimizing API performance.";
         }

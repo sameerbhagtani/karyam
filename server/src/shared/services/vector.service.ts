@@ -14,19 +14,33 @@ interface ChunkRecord {
 export class VectorService {
     private sessionDao: InterviewSessionDao;
     private pineconeClient: Pinecone | null = null;
-    private indexName: string;
     private indexHost?: string;
 
     constructor() {
         this.sessionDao = new InterviewSessionDao();
-        this.indexName = env.PINECONE_INDEX_NAME || "karyam-index";
         this.indexHost = env.PINECONE_HOST || process.env.PINECONE_HOST || undefined;
+    }
 
-        if (env.PINECONE_API_KEY) {
+    public getPineconeClient(): Pinecone | null {
+        const apiKey = env.PINECONE_API_KEY || process.env.PINECONE_API_KEY;
+        if (!apiKey) return null;
+        if (!this.pineconeClient) {
             this.pineconeClient = new Pinecone({
-                apiKey: env.PINECONE_API_KEY,
+                apiKey,
             });
         }
+        return this.pineconeClient;
+    }
+
+    public getIndexName(): string {
+        return env.PINECONE_INDEX_NAME || process.env.PINECONE_INDEX_NAME || "karyam-index";
+    }
+
+    public getIndex() {
+        const pinecone = this.getPineconeClient();
+        if (!pinecone) return null;
+        const indexName = this.getIndexName();
+        return this.indexHost ? pinecone.index(indexName, this.indexHost) : pinecone.index(indexName);
     }
 
     async chunkText(text: string, sourceType: "resume" | "jd"): Promise<ChunkRecord[]> {
@@ -57,13 +71,23 @@ export class VectorService {
             const jdChunks = await this.chunkText(jdText, "jd");
             const allChunks = [...resumeChunks, ...jdChunks];
 
+            if (allChunks.length === 0) {
+                logger.warn({ sessionId }, "No text chunks generated from resume or JD");
+                await this.sessionDao.updateSessionStatus(sessionId, "aborted");
+                return;
+            }
+
             // 2. Check if external services are configured
-            if (!mistralManager.hasKeys() || !this.pineconeClient || !env.PINECONE_API_KEY) {
-                logger.warn(
-                    { sessionId },
-                    "Mistral API keys or PINECONE_API_KEY is not configured. Stubbing vector upsert and transitioning session to 'ready'."
+            const pinecone = this.getPineconeClient();
+            const indexName = this.getIndexName();
+            const hasMistral = mistralManager.hasKeys();
+
+            if (!hasMistral || !pinecone) {
+                logger.error(
+                    { sessionId, hasMistral, hasPinecone: !!pinecone },
+                    "Mistral API keys or PINECONE_API_KEY is not configured. Aborting session per PRD."
                 );
-                await this.sessionDao.updateSessionStatus(sessionId, "ready");
+                await this.sessionDao.updateSessionStatus(sessionId, "aborted");
                 return;
             }
 
@@ -72,10 +96,12 @@ export class VectorService {
             const vectors = await mistralManager.embedDocuments(textsToEmbed);
 
             // 4. Upsert into Pinecone under session-scoped namespace
-            // If explicit index host is provided, use it directly to bypass control plane lookup
-            const index = this.indexHost
-                ? this.pineconeClient.index(this.indexName, this.indexHost)
-                : this.pineconeClient.index(this.indexName);
+            const index = this.getIndex();
+            if (!index) {
+                logger.error({ sessionId }, "Pinecone index not available for upsert");
+                await this.sessionDao.updateSessionStatus(sessionId, "aborted");
+                return;
+            }
             const records = allChunks.map((chunk, i) => ({
                 id: `${sessionId}-${chunk.sourceType}-${chunk.chunkIndex}`,
                 values: vectors[i],
@@ -96,7 +122,7 @@ export class VectorService {
             }
 
             logger.info(
-                { sessionId, totalChunks: records.length, namespace: sessionId },
+                { sessionId, totalChunks: records.length, namespace: sessionId, index: indexName },
                 "Successfully embedded and upserted vectors to Pinecone"
             );
 
@@ -106,6 +132,31 @@ export class VectorService {
             logger.error({ error, sessionId }, "Failed to process session embeddings");
             await this.sessionDao.updateSessionStatus(sessionId, "aborted");
         }
+    }
+
+    async querySimilarChunks(
+        sessionId: string,
+        queryText: string,
+        topK: number = 4
+    ): Promise<Array<{ text: string; sourceType: "resume" | "jd"; score?: number }>> {
+        const index = this.getIndex();
+        if (!index) {
+            logger.warn({ sessionId }, "Pinecone client not configured for similarity search.");
+            return [];
+        }
+
+        const queryVector = await mistralManager.embedQuery(queryText);
+        const response = await index.namespace(sessionId).query({
+            vector: queryVector,
+            topK,
+            includeMetadata: true,
+        });
+
+        return (response.matches || []).map((match) => ({
+            text: (match.metadata?.text as string) || "",
+            sourceType: (match.metadata?.sourceType as "resume" | "jd") || "resume",
+            score: match.score,
+        }));
     }
 }
 

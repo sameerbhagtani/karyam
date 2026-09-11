@@ -12,6 +12,7 @@ const router = express.Router();
 // mounting the public routers
 router.use("/health", healthRouter);
 router.use("/auth", authRouter);
+router.use("/v1/auth", authRouter);
 
 // mounting Dev A routers
 router.use("/resumes", resumeRouter);

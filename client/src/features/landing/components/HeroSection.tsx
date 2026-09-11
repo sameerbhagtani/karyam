@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import Image from '@/shared/components/Image/Image'
 import { orbitImages, orbitRings } from '../data/landingContent'
@@ -147,7 +148,7 @@ export default function HeroSection() {
         <p>CONCH</p>
         <h1>All in one platform for Web developers</h1>
         <div className={styles.actions}>
-          <a href="/create">Start Building</a>
+          <Link to="/prep">Practice Mock Interview</Link>
           <a href="#command-room">Explore Flow</a>
         </div>
       </div>

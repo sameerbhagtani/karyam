@@ -19,10 +19,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  { label: 'Mock Interview', href: '/prep' },
   { label: 'Docs', href: '/docs' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
-  { label: 'Start Building', href: '/create' },
 ]
 
 const secondaryItems: NavItem[] = [

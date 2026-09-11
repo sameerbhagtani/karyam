@@ -74,7 +74,7 @@ const interviewSessionSchema = new Schema<IInterviewSession>(
         targetLoopCount: {
             type: Number,
             default: 7,
-            min: 5,
+            min: 1,
             max: 10,
         },
         currentTurnIndex: {

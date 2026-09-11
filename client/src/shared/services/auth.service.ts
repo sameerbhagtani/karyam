@@ -1,3 +1,5 @@
+import { apiClient } from '../api/client'
+
 export interface User {
   _id?: string
   userId?: string
@@ -59,6 +61,9 @@ class AuthService {
       throw new Error(json.message || 'Login succeeded but user data was missing.')
     }
 
+    // Save newly received access token into apiClient
+    apiClient.setStoredToken(json.data.accessToken)
+
     return {
       user: json.data.user,
       accessToken: json.data.accessToken,
@@ -91,6 +96,9 @@ class AuthService {
       throw new Error(json.message || 'Registration completed.')
     }
 
+    // Save newly received access token into apiClient
+    apiClient.setStoredToken(json.data.accessToken)
+
     return {
       user: json.data.user,
       accessToken: json.data.accessToken,
@@ -98,14 +106,15 @@ class AuthService {
     }
   }
 
-  async getMe(accessToken: string): Promise<User> {
-    const response = await fetch(`${this.baseUrl}/me`, {
+  async getMe(accessToken?: string): Promise<User> {
+    const headers: Record<string, string> = {}
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`
+    }
+
+    const response = await apiClient.request(`${this.baseUrl}/me`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${accessToken}`,
-      },
-      credentials: 'include',
+      headers,
     })
 
     const json: ApiResponse<{ user: User }> = await response.json().catch(() => ({
@@ -120,24 +129,9 @@ class AuthService {
   }
 
   async refresh(): Promise<{ user: User; accessToken: string }> {
-    const response = await fetch(`${this.baseUrl}/refresh`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
-    })
-
-    const json: ApiResponse<AuthSuccessData> = await response.json().catch(() => ({
-      message: 'Failed to refresh token',
-    }))
-
-    if (!response.ok || !json.data) {
-      throw new Error(json.message || 'Session expired')
-    }
-
-    return {
-      user: json.data.user,
-      accessToken: json.data.accessToken,
-    }
+    const newAccessToken = await apiClient.refreshToken()
+    const user = await this.getMe(newAccessToken)
+    return { user, accessToken: newAccessToken }
   }
 
   async logout(): Promise<void> {
@@ -149,6 +143,8 @@ class AuthService {
       })
     } catch {
       // ignore network errors on logout
+    } finally {
+      apiClient.setStoredToken(null)
     }
   }
 }

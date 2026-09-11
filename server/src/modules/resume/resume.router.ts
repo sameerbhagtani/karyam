@@ -19,6 +19,17 @@ router.post(
 );
 
 /*
+    @route GET /api/resumes
+    @desc Get all resumes uploaded by the authenticated user
+    @access Private
+*/
+router.get(
+    "/",
+    authMiddleware,
+    resumeController.getUserResumes
+);
+
+/*
     @route GET /api/resumes/:id
     @desc Get resume details by ID
     @access Private

@@ -96,6 +96,33 @@ export class JobDescriptionController {
             createdAt: jd.createdAt,
         });
     };
+
+    getUserJobDescriptions = async (req: Request & { user?: Record<string, unknown> }, res: Response) => {
+        const userId = (req.user?.userId || req.user?._id) as string;
+        if (!userId) {
+            throw new BadRequest("User not authenticated");
+        }
+
+        const jds = await this.jdDao.findJobDescriptionsByUserId(userId);
+        return res.status(200).json({
+            jobDescriptions: jds.map((j) => ({
+                jdId: j._id.toString(),
+                title: j.title,
+                company: j.company,
+                sourceType: j.sourceType,
+                createdAt: j.createdAt,
+            })),
+            latest: jds[0]
+                ? {
+                      jdId: jds[0]._id.toString(),
+                      title: jds[0].title,
+                      company: jds[0].company,
+                      sourceType: jds[0].sourceType,
+                      createdAt: jds[0].createdAt,
+                  }
+                : null,
+        });
+    };
 }
 
 export default JobDescriptionController;

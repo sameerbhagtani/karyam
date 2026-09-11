@@ -157,6 +157,13 @@ export class MistralManager {
     }
 
     /**
+     * Returns the configured or default Mistral chat model name.
+     */
+    public getChatModelName(): string {
+        return process.env.MISTRAL_CHAT_MODEL || "open-mistral-nemo";
+    }
+
+    /**
      * Detects if an error is related to rate limiting or quota exhaustion.
      */
     public isRateLimitError(error: unknown): boolean {
@@ -171,11 +178,25 @@ export class MistralManager {
         };
 
         const status = err.status || err.statusCode || err.response?.status;
+
+        // HTTP 401 (Unauthorized), 403 (Forbidden/Tier mismatch), 404 (Model not found) are NOT rate limits
+        if (status === 401 || status === 403 || status === 404) {
+            return false;
+        }
+
+        const message = String(err.message || "").toLowerCase();
+        if (
+            message.includes("subscription tier") ||
+            message.includes("not found") ||
+            message.includes("unauthorized")
+        ) {
+            return false;
+        }
+
         if (status === 429 || status === 402) {
             return true;
         }
 
-        const message = String(err.message || "").toLowerCase();
         return (
             message.includes("429") ||
             message.includes("rate limit") ||
@@ -224,7 +245,7 @@ export class MistralManager {
                     this.markKeyRateLimited(apiKey);
                     attempts++;
                 } else {
-                    // Non-rate-limit error (e.g. invalid request parameters) should not rotate through all keys
+                    // Non-rate-limit error (e.g. invalid request parameters, tier mismatch) should fail fast
                     throw error;
                 }
             }
@@ -245,6 +266,7 @@ export class MistralManager {
             const embeddings = new MistralAIEmbeddings({
                 apiKey,
                 model: "mistral-embed",
+                maxRetries: 1,
             });
             return await embeddings.embedDocuments(texts);
         });
@@ -258,6 +280,7 @@ export class MistralManager {
             const embeddings = new MistralAIEmbeddings({
                 apiKey,
                 model: "mistral-embed",
+                maxRetries: 1,
             });
             return await embeddings.embedQuery(text);
         });
@@ -277,8 +300,9 @@ export class MistralManager {
 
         return new ChatMistralAI({
             apiKey,
-            model: options?.model || "mistral-medium-latest",
+            model: options?.model || this.getChatModelName(),
             temperature: options?.temperature ?? 0.7,
+            maxRetries: 1,
         });
     }
 }

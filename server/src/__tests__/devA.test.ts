@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import request from "supertest";
 import mongoose, { Types } from "mongoose";
 import createApp from "../app.js";
@@ -33,7 +34,14 @@ const samplePdfBuffer = Buffer.from(
     "%%EOF"
 );
 
+import dns from "node:dns";
+
+try {
+    dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+} catch {}
+
 describe("Dev A Backend - Ingestion, Storage & Session Setup", () => {
+    jest.setTimeout(30000);
     const user1Id = new Types.ObjectId().toString();
     const user2Id = new Types.ObjectId().toString();
 

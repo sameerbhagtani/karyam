@@ -2,6 +2,14 @@
 import mongoose from "mongoose";
 import env from "./env.config.js";
 import logger from "./logger.config.js";
+import dns from "dns";
+
+// Set reliable DNS servers (Google + Cloudflare) so mongodb+srv:// SRV queries resolve on Windows/local networks
+try {
+    dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+} catch (dnsErr) {
+    logger.warn(dnsErr, "Could not set custom DNS servers for SRV resolution");
+}
 
 // function to connect to the database
 async function connectDB() {

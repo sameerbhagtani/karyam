@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import request from "supertest";
 import mongoose, { Types } from "mongoose";
 import createApp from "../app.js";
@@ -23,7 +24,14 @@ const sampleWavBuffer = Buffer.from(
     "base64"
 );
 
+import dns from "node:dns";
+
+try {
+    dns.setServers(["8.8.8.8", "8.8.4.4", "1.1.1.1"]);
+} catch {}
+
 describe("Dev B Backend - Voice Pipeline & Interview Engine", () => {
+    jest.setTimeout(30000);
     const userId = new Types.ObjectId().toString();
     const otherUserId = new Types.ObjectId().toString();
 

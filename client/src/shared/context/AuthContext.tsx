@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { authService, type User, type LoginPayload, type SignupPayload } from '../services/auth.service'
+import { apiClient, TOKEN_KEY } from '../api/client'
 import { AuthContext } from './authContextDef'
-
-const TOKEN_KEY = 'conch_access_token'
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
@@ -16,7 +15,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let isMounted = true
 
     const initAuth = async () => {
-      const storedToken = localStorage.getItem(TOKEN_KEY)
+      // Capture token from OAuth redirect query param if present
+      let storedToken = localStorage.getItem(TOKEN_KEY)
+      if (typeof window !== 'undefined') {
+        const urlParams = new URLSearchParams(window.location.search)
+        const queryToken = urlParams.get('token')
+        if (queryToken) {
+          localStorage.setItem(TOKEN_KEY, queryToken)
+          storedToken = queryToken
+          // Clean token query parameter from address bar
+          const cleanUrl = window.location.pathname + window.location.hash
+          window.history.replaceState({}, document.title, cleanUrl)
+        }
+      }
 
       if (storedToken) {
         try {
@@ -68,6 +79,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     return () => {
       isMounted = false
+    }
+  }, [])
+
+  // Synchronize React auth state when interceptor automatically refreshes the token in the background
+  useEffect(() => {
+    const unsubRefreshed = apiClient.onTokenRefreshed(async (newToken) => {
+      setAccessToken(newToken)
+      try {
+        const profile = await authService.getMe(newToken)
+        setUser(profile)
+      } catch {
+        // keep existing user if profile fetch fails
+      }
+    })
+
+    const unsubFailed = apiClient.onAuthFailed(() => {
+      setUser(null)
+      setAccessToken(null)
+    })
+
+    return () => {
+      unsubRefreshed()
+      unsubFailed()
     }
   }, [])
 

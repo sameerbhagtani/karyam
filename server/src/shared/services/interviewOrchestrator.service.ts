@@ -136,7 +136,7 @@ Instructions:
                 await mistralManager.executeWithRetry(async (apiKey) => {
                     const chat = new ChatMistralAI({
                         apiKey,
-                        model: "mistral-medium-latest",
+                        model: mistralManager.getChatModelName(),
                         temperature: 0.7,
                     });
 
@@ -296,7 +296,7 @@ Output strict JSON with this schema:
                 await mistralManager.executeWithRetry(async (apiKey) => {
                     const chat = new ChatMistralAI({
                         apiKey,
-                        model: "mistral-medium-latest",
+                        model: mistralManager.getChatModelName(),
                         temperature: 0.3,
                     });
 
@@ -413,7 +413,7 @@ Return strictly valid JSON with this exact schema:
                 await mistralManager.executeWithRetry(async (apiKey) => {
                     const chat = new ChatMistralAI({
                         apiKey,
-                        model: "mistral-medium-latest",
+                        model: mistralManager.getChatModelName(),
                         temperature: 0.3,
                     });
 

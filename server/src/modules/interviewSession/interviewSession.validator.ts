@@ -16,8 +16,8 @@ export const createSessionValidators = [
 
     body("targetLoopCount")
         .optional()
-        .isInt({ min: 5, max: 10 })
-        .withMessage("targetLoopCount must be an integer between 5 and 10"),
+        .isInt({ min: 1, max: 10 })
+        .withMessage("targetLoopCount must be an integer between 1 and 10"),
 
     validateErrors,
 ];

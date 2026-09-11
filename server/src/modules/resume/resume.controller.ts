@@ -76,6 +76,31 @@ export class ResumeController {
             createdAt: resume.createdAt,
         });
     };
+
+    getUserResumes = async (req: Request & { user?: Record<string, unknown> }, res: Response) => {
+        const userId = (req.user?.userId || req.user?._id) as string;
+        if (!userId) {
+            throw new BadRequest("User not authenticated");
+        }
+
+        const resumes = await this.resumeDao.findResumesByUserId(userId);
+        return res.status(200).json({
+            resumes: resumes.map((r) => ({
+                resumeId: r._id.toString(),
+                originalFilename: r.originalFilename,
+                mimeType: r.mimeType,
+                createdAt: r.createdAt,
+            })),
+            latest: resumes[0]
+                ? {
+                      resumeId: resumes[0]._id.toString(),
+                      originalFilename: resumes[0].originalFilename,
+                      mimeType: resumes[0].mimeType,
+                      createdAt: resumes[0].createdAt,
+                  }
+                : null,
+        });
+    };
 }
 
 export default ResumeController;

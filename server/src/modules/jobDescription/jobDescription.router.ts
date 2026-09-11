@@ -19,6 +19,17 @@ router.post(
 );
 
 /*
+    @route GET /api/job-descriptions
+    @desc Get all job descriptions created by the authenticated user
+    @access Private
+*/
+router.get(
+    "/",
+    authMiddleware,
+    jdController.getUserJobDescriptions
+);
+
+/*
     @route GET /api/job-descriptions/:id
     @desc Get job description details by ID
     @access Private
