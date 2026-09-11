@@ -19,6 +19,14 @@ const envConstants = {
     GOOGLE_CLIENT_ID: "",
     GOOGLE_CLIENT_SECRET: "",
     GOOGLE_REDIRECT_URI: "http://localhost:5000/api/v1/auth/google/callback",
+    AWS_REGION: "us-east-1",
+    AWS_ACCESS_KEY_ID: "",
+    AWS_SECRET_ACCESS_KEY: "",
+    AWS_S3_BUCKET_NAME: "karyam-uploads",
+    AWS_ENDPOINT: "",
+    MISTRAL_API_KEY: "",
+    PINECONE_API_KEY: "",
+    PINECONE_INDEX_NAME: "karyam-index",
 } as const;
 
 export default envConstants;
