@@ -2,6 +2,9 @@
 import express from "express";
 import healthRouter from "./health.router.js";
 import authRouter from "../../modules/public/auth/auth.router.js";
+import resumeRouter from "../../modules/resume/resume.router.js";
+import jdRouter from "../../modules/jobDescription/jobDescription.router.js";
+import interviewSessionRouter from "../../modules/interviewSession/interviewSession.router.js";
 
 // making the router
 const router = express.Router();
@@ -9,6 +12,11 @@ const router = express.Router();
 // mounting the public routers
 router.use("/health", healthRouter);
 router.use("/auth", authRouter);
+
+// mounting Dev A routers
+router.use("/resumes", resumeRouter);
+router.use("/job-descriptions", jdRouter);
+router.use("/interview-sessions", interviewSessionRouter);
 
 // exporting the router
 export default router;

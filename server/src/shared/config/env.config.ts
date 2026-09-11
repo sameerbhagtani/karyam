@@ -12,6 +12,7 @@ const envSchema = z.object({
     NODE_ENV: z.enum(["development", "production", "test"]).default(envConstants.NODE_ENV),
     MONGO_URI: z.string().default(envConstants.MONGO_URI),
     CORS_ORIGIN: z.string().default(envConstants.CORS_ORIGIN),
+    FRONTEND_URL: z.string().default(envConstants.FRONTEND_URL),
     ACCESS_TOKEN_SECRET: z.string().default(envConstants.ACCESS_TOKEN_SECRET),
     REFRESH_TOKEN_SECRET: z.string().default(envConstants.REFRESH_TOKEN_SECRET),
     SMTP_HOST: z.string().default(envConstants.SMTP_HOST),
@@ -26,6 +27,14 @@ const envSchema = z.object({
     GOOGLE_CLIENT_ID: z.string().default(envConstants.GOOGLE_CLIENT_ID),
     GOOGLE_CLIENT_SECRET: z.string().default(envConstants.GOOGLE_CLIENT_SECRET),
     GOOGLE_REDIRECT_URI: z.string().url().default(envConstants.GOOGLE_REDIRECT_URI),
+    AWS_REGION: z.string().default(envConstants.AWS_REGION),
+    AWS_ACCESS_KEY_ID: z.string().default(envConstants.AWS_ACCESS_KEY_ID),
+    AWS_SECRET_ACCESS_KEY: z.string().default(envConstants.AWS_SECRET_ACCESS_KEY),
+    AWS_S3_BUCKET_NAME: z.string().default(envConstants.AWS_S3_BUCKET_NAME),
+    AWS_ENDPOINT: z.string().default(envConstants.AWS_ENDPOINT),
+    MISTRAL_API_KEY: z.string().default(envConstants.MISTRAL_API_KEY),
+    PINECONE_API_KEY: z.string().default(envConstants.PINECONE_API_KEY),
+    PINECONE_INDEX_NAME: z.string().default(envConstants.PINECONE_INDEX_NAME),
 });
 
 // parsing and validating environment variables

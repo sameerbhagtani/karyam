@@ -3,6 +3,7 @@ const envConstants = {
     NODE_ENV: 'development',
     MONGO_URI: 'mongodb://localhost:27017/karya',
     CORS_ORIGIN: '*',
+    FRONTEND_URL: "http://localhost:5173",
     ACCESS_TOKEN_SECRET: "super_secret_access_jwt_key_change_in_production",
     REFRESH_TOKEN_SECRET: "super_secret_refresh_jwt_key_change_in_production",
     SMTP_HOST: "smtp.gmail.com",
@@ -14,6 +15,14 @@ const envConstants = {
     GOOGLE_CLIENT_ID: "",
     GOOGLE_CLIENT_SECRET: "",
     GOOGLE_REDIRECT_URI: "http://localhost:5000/api/v1/auth/google/callback",
+    AWS_REGION: "us-east-1",
+    AWS_ACCESS_KEY_ID: "",
+    AWS_SECRET_ACCESS_KEY: "",
+    AWS_S3_BUCKET_NAME: "karyam-uploads",
+    AWS_ENDPOINT: "",
+    MISTRAL_API_KEY: "",
+    PINECONE_API_KEY: "",
+    PINECONE_INDEX_NAME: "karyam-index",
 } as const;
 
 export default envConstants;
