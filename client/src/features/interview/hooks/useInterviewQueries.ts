@@ -10,6 +10,10 @@ export const INTERVIEW_QUERY_KEYS = {
   jobDescriptionsList: ['job-descriptions-list'] as const,
   resume: (id: string) => ['resume', id] as const,
   jobDescription: (id: string) => ['job-description', id] as const,
+  jdWorkspace: (id: string) => ['jd-workspace', id] as const,
+  atsRateLimit: ['ats-rate-limit'] as const,
+  atsVersion: (jdId: string, analysisId: string) => ['ats-version', jdId, analysisId] as const,
+  sessionsList: ['interview-sessions-list'] as const,
   session: (id: string) => ['interview-session', id] as const,
   report: (id: string) => ['session-report', id] as const,
 }
@@ -98,7 +102,12 @@ export function useSessionReportQuery(sessionId?: string, enabled = true) {
       return interviewApi.getSessionReport(sessionId)
     },
     enabled: !!sessionId && enabled,
-    retry: 2,
+    retry: 3,
+    refetchInterval: (query) => {
+      // Auto-poll if report not yet generated
+      if (query.state.status === 'error') return 2500
+      return false
+    },
     staleTime: 1000 * 60 * 5,
   })
 }
@@ -122,5 +131,91 @@ export function useJobDescriptionQuery(jdId?: string) {
       return interviewApi.getJobDescription(jdId)
     },
     enabled: !!jdId,
+  })
+}
+
+export function useJdWorkspaceQuery(jdId?: string, enabled = true) {
+  return useQuery({
+    queryKey: jdId ? INTERVIEW_QUERY_KEYS.jdWorkspace(jdId) : ['jd-workspace', 'none'],
+    queryFn: () => {
+      if (!jdId) throw new Error('JD ID required')
+      return interviewApi.getJdWorkspace(jdId)
+    },
+    enabled: !!jdId && enabled,
+    staleTime: 1000 * 30, // 30 seconds
+  })
+}
+
+export function useUploadResumeForJdMutation(jdId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (file: File) => interviewApi.uploadResumeForJd(jdId, file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.jdWorkspace(jdId) })
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.atsRateLimit })
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.resumesList })
+    },
+  })
+}
+
+export function useAnalyzeLibraryResumeMutation(jdId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (resumeId: string) => interviewApi.analyzeLibraryResumeForJd(jdId, resumeId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.jdWorkspace(jdId) })
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.atsRateLimit })
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.resumesList })
+    },
+  })
+}
+
+export function useAtsRateLimitQuery(enabled = true) {
+  return useQuery({
+    queryKey: INTERVIEW_QUERY_KEYS.atsRateLimit,
+    queryFn: () => interviewApi.getAtsRateLimit(),
+    enabled,
+    staleTime: 1000 * 20,
+  })
+}
+
+export function useAtsAnalysisVersionQuery(jdId?: string, analysisId?: string, enabled = true) {
+  return useQuery({
+    queryKey: jdId && analysisId ? INTERVIEW_QUERY_KEYS.atsVersion(jdId, analysisId) : ['ats-version', 'none'],
+    queryFn: () => {
+      if (!jdId || !analysisId) throw new Error('JD ID and Analysis ID required')
+      return interviewApi.getAtsAnalysisVersion(jdId, analysisId)
+    },
+    enabled: !!jdId && !!analysisId && enabled,
+    staleTime: 1000 * 60 * 10,
+  })
+}
+
+export function useUserSessionsQuery(enabled = true) {
+  return useQuery({
+    queryKey: INTERVIEW_QUERY_KEYS.sessionsList,
+    queryFn: () => interviewApi.getUserSessions(),
+    enabled,
+    staleTime: 1000 * 30,
+  })
+}
+
+export function useDeleteResumeMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => interviewApi.deleteResume(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.resumesList })
+    },
+  })
+}
+
+export function useDeleteJobDescriptionMutation() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => interviewApi.deleteJobDescription(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: INTERVIEW_QUERY_KEYS.jobDescriptionsList })
+    },
   })
 }

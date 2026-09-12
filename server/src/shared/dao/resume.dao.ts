@@ -20,6 +20,14 @@ class ResumeDao {
         return await this.ResumeModel.find({ userId }).sort({ createdAt: -1 });
     }
 
+    async findResumesByJdId(jdId: string | Types.ObjectId): Promise<IResume[]> {
+        return await this.ResumeModel.find({ jdId }).sort({ version: -1, createdAt: -1 });
+    }
+
+    async findLatestResumeByJdId(jdId: string | Types.ObjectId): Promise<IResume | null> {
+        return await this.ResumeModel.findOne({ jdId }).sort({ version: -1, createdAt: -1 });
+    }
+
     async deleteResumeById(id: string | Types.ObjectId): Promise<IResume | null> {
         return await this.ResumeModel.findByIdAndDelete(id);
     }

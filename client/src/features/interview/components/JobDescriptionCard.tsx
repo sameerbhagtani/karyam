@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../store/hooks'
 import {
   setJobDescription,
@@ -151,13 +152,30 @@ export const JobDescriptionCard: React.FC = () => {
                 ID: {currentJd.jdId} • Source: {currentJd.sourceType === 'pasted_text' ? 'Pasted Text' : 'Uploaded File'}
               </p>
             </div>
-            <div className={styles.assetActions}>
+            <div className={styles.assetActions} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <Link
+                to={`/jds/${currentJd.jdId}`}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '9999px',
+                  backgroundColor: '#111113',
+                  color: '#ffffff',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                <span>Open Workspace →</span>
+              </Link>
               <button
                 type="button"
                 className={styles.btnDangerText}
                 onClick={() => dispatch(clearJobDescription())}
               >
-                Change / Create New
+                Change
               </button>
             </div>
           </div>

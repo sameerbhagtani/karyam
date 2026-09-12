@@ -30,10 +30,10 @@ COPY --from=builder /app/server/package*.json ./
 RUN npm ci --only=production
 
 COPY --from=builder /app/server/dist ./dist
-COPY --from=builder /app/server/server.js ./server.js
 
 # Copy built frontend assets into server public folder
 COPY --from=client-builder /app/client/dist ./public
+COPY --from=client-builder /app/client/dist ./dist/public
 
 EXPOSE 5000
-CMD ["node", "server.js"]
+CMD ["node", "dist/server.js"]

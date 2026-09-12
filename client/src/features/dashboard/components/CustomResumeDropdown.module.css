@@ -1,0 +1,352 @@
+.container {
+  position: relative;
+  display: inline-block;
+}
+
+.fullWidth {
+  width: 100%;
+}
+
+/* PILL VARIANT (For ATS Card Header) */
+.pillTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.pillTrigger:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #0f172a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.pillTriggerOpen {
+  background: #eff6ff !important;
+  border-color: #2563eb !important;
+  color: #1d4ed8 !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* SELECT VARIANT - LIGHT THEME */
+.selectTriggerLight {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #18181b;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.selectTriggerLight:hover {
+  border-color: #94a3b8;
+  background: #fcfcfc;
+}
+
+.selectTriggerLightOpen {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12) !important;
+}
+
+/* SELECT VARIANT - DARK THEME (Mock Interview Card) */
+.selectTriggerDark {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.selectTriggerDark:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(147, 197, 253, 0.4);
+}
+
+.selectTriggerDarkOpen {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25) !important;
+}
+
+/* TRIGGER INNER LAYOUT */
+.triggerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.triggerText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileIcon {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.chevron {
+  flex-shrink: 0;
+  transition: transform 180ms ease;
+  opacity: 0.7;
+}
+
+.chevronRotated {
+  transform: rotate(180deg);
+}
+
+.containerOpen {
+  z-index: 1000;
+}
+
+/* FLOATING MENU */
+.menu {
+  position: absolute;
+  z-index: 9999;
+  min-width: 270px;
+  max-width: 380px;
+  border-radius: 14px;
+  padding: 6px;
+}
+
+.menuDown {
+  top: calc(100% + 6px);
+  bottom: auto;
+  animation: dropdownFadeIn 140ms ease-out;
+}
+
+.menuUp {
+  bottom: calc(100% + 6px);
+  top: auto;
+  animation: dropdownFadeInUp 140ms ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes dropdownFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alignLeft {
+  left: 0;
+}
+
+.alignRight {
+  right: 0;
+}
+
+.menuLight {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 14px 34px -4px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.menuDark {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.menuHeader {
+  padding: 6px 10px 8px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid transparent;
+  margin-bottom: 4px;
+}
+
+.menuHeaderLight {
+  color: #71717a;
+  border-bottom-color: #f1f5f9;
+}
+
+.menuHeaderDark {
+  color: #a1a1aa;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+.itemsList {
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-right: 2px;
+}
+
+.itemsList::-webkit-scrollbar {
+  width: 4px;
+}
+
+.itemsList::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.menuDark .itemsList::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* MENU ITEMS */
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 120ms ease;
+  gap: 10px;
+}
+
+.menuItemLight {
+  color: #1e293b;
+}
+
+.menuItemLight:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+}
+
+.menuItemLightActive {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+}
+
+.menuItemDark {
+  color: #e4e4e7;
+}
+
+.menuItemDark:hover {
+  background: #27272a;
+  color: #ffffff;
+}
+
+.menuItemDarkActive {
+  background: rgba(59, 130, 246, 0.2) !important;
+  color: #93c5fd !important;
+}
+
+.itemLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.itemTextCol {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemSubtitle {
+  font-size: 11px;
+  opacity: 0.65;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.latestTagLight {
+  font-size: 10px;
+  font-weight: 700;
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.latestTagDark {
+  font-size: 10px;
+  font-weight: 700;
+  color: #93c5fd;
+  background: rgba(59, 130, 246, 0.2);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.checkIcon {
+  flex-shrink: 0;
+  color: #2563eb;
+}
+
+.menuDark .checkIcon {
+  color: #60a5fa;
+}
+
+/* LOADING SPINNER */
+.spinner {
+  width: 13px;
+  height: 13px;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,11 +1,14 @@
 import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface IInterviewReport {
+    overallScore?: number;
     confidenceScore?: number;
     answerQualityScore?: number;
     strengths?: string[];
     weaknesses?: string[];
+    topicsForImprovement?: string[];
     advice?: string;
+    jdPreparationAdvice?: string;
 }
 
 export type InterviewSessionStatus =
@@ -32,11 +35,14 @@ export interface IInterviewSession extends Document {
 
 const reportSchema = new Schema<IInterviewReport>(
     {
+        overallScore: { type: Number, min: 0, max: 10 },
         confidenceScore: { type: Number, min: 0, max: 10 },
         answerQualityScore: { type: Number, min: 0, max: 10 },
         strengths: { type: [String], default: [] },
         weaknesses: { type: [String], default: [] },
+        topicsForImprovement: { type: [String], default: [] },
         advice: { type: String, default: "" },
+        jdPreparationAdvice: { type: String, default: "" },
     },
     { _id: false }
 );

@@ -40,4 +40,15 @@ router.get(
     resumeController.getResumeById
 );
 
+/*
+    @route DELETE /api/resumes/:id
+    @desc Delete resume by ID
+    @access Private
+*/
+router.delete(
+    "/:id",
+    authMiddleware,
+    resumeController.deleteResume
+);
+
 export default router;

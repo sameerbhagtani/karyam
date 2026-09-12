@@ -12,11 +12,11 @@ interface Step {
 }
 
 const steps: Step[] = [
-  { label: 'BUILD', tone: 'green', icon: '+' },
-  { label: 'DEPLOY', tone: 'blue', icon: '^' },
-  { label: 'DETECT', tone: 'pink', icon: '!' },
-  { label: 'SOLVE', tone: 'amber', icon: '/' },
-  { label: 'MOVE ON', tone: 'ink', icon: '>' },
+  { label: 'RESUME AI', tone: 'green', icon: '+' },
+  { label: 'MOCK INTERVIEW', tone: 'blue', icon: '^' },
+  { label: 'SKILL AUDIT', tone: 'pink', icon: '!' },
+  { label: 'MATCH JOBS', tone: 'amber', icon: '/' },
+  { label: 'GET HIRED', tone: 'ink', icon: '>' },
 ]
 
 const getStackPositions = (count: number) => {
@@ -97,7 +97,7 @@ export default function ProcessStepsSection() {
       className={styles.processSection}
       id="command-room"
       ref={sectionRef}
-      aria-label="CONCH process steps"
+      aria-label="Karyam process steps"
     >
       <div className={styles.processStage}>
         <div className={styles.stepStack}>

@@ -1,4 +1,5 @@
 import Image from '@/shared/components/Image/Image'
+import logoPng from '@/assets/images/logo.png'
 import styles from './Logo.module.css'
 
 export interface LogoProps {
@@ -12,7 +13,7 @@ export default function Logo({
   revealOnHover = false,
   className = '',
 }: LogoProps) {
-  const label = compact ? 'CONCH logo mark' : 'CONCH logo'
+  const label = compact ? 'Karyam logo mark' : 'Karyam logo'
 
   return (
     <span
@@ -23,13 +24,13 @@ export default function Logo({
     >
       <Image
         className={styles.mark}
-        src="/conch-logo-dark.svg"
+        src={logoPng}
         alt=""
         width={34}
         height={34}
         aria-hidden="true"
       />
-      {!compact ? <span className={styles.wordmark}>CONCH</span> : null}
+      {!compact ? <span className={styles.wordmark}>Karyam</span> : null}
     </span>
   )
 }

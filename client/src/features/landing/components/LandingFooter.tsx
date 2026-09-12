@@ -12,13 +12,12 @@ interface FooterLink {
 }
 
 const footerLinks: FooterLink[] = [
-  { label: 'Start Building', href: '/create' },
+  { label: 'Mock Interview', href: '/prep' },
+  { label: 'Resume Builder', href: '/create' },
+  { label: 'Platform Steps', href: '#command-room' },
   { label: 'Docs', href: '/docs' },
   { label: 'About', href: '/about' },
   { label: 'Contact', href: '/contact' },
-  { label: 'Incident Flow', href: '#incident-flow' },
-  { label: 'Command Room', href: '#command-room' },
-  { label: 'Postmortem', href: '#postmortem' },
 ]
 
 const socialLinks: FooterLink[] = [
@@ -63,7 +62,7 @@ export default function LandingFooter() {
   }, [])
 
   return (
-    <footer className={styles.footer} id="docs" ref={footerRef} aria-label="CONCH footer">
+    <footer className={styles.footer} id="docs" ref={footerRef} aria-label="Karyam footer">
       <div className={styles.inner}>
         <div
           className={styles.brand}
@@ -72,7 +71,7 @@ export default function LandingFooter() {
           }}
         >
           <Logo className={styles.logo} />
-          <p>Root cause incident command for modern websites.</p>
+          <p>AI-powered job matching, resume building, and mock interviews to make you job-ready.</p>
         </div>
 
         <nav
@@ -107,8 +106,8 @@ export default function LandingFooter() {
             revealRefs.current[2] = node
           }}
         >
-          <span>© {new Date().getFullYear()} CONCH</span>
-          <span>Root cause incident command</span>
+          <span>© {new Date().getFullYear()} Karyam</span>
+          <span>AI-Powered Career & Interview Platform</span>
         </div>
       </div>
     </footer>

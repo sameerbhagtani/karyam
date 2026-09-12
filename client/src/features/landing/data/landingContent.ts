@@ -273,59 +273,59 @@ export const featureCards: FeatureCard[] = [
 export const incidentStages: IncidentStage[] = [
   {
     number: '01',
-    title: 'Detect',
-    text: 'Crash, console, route, release.',
+    title: 'Craft Resume',
+    text: 'AI analyzes & optimizes for ATS filters.',
   },
   {
     number: '02',
-    title: 'Trace',
-    text: 'Root cause and probable file.',
+    title: 'Mock Interview',
+    text: 'Realistic voice/text AI roleplay & drills.',
   },
   {
     number: '03',
-    title: 'Assign',
-    text: 'Manager picks the squad.',
+    title: 'Feedback & Score',
+    text: 'Instant actionable metrics & fixes.',
   },
   {
     number: '04',
-    title: 'Resolve',
-    text: 'Chat, AI, logs, postmortem.',
+    title: 'Match & Land',
+    text: 'Curated roles matching your verified skills.',
   },
 ]
 
 export const signalCards: SignalCard[] = [
-  { label: 'Severity', value: 'P1', note: 'Checkout blocked' },
-  { label: 'Root cause', value: 'auth/session.js', note: 'Token refresh loop' },
-  { label: 'Owner', value: 'Core Web', note: '5 devs assigned' },
-  { label: 'Report', value: 'Postmortem ready', note: 'Timeline complete' },
+  { label: 'Readiness', value: '94%', note: 'Mock interview score' },
+  { label: 'Resume ATS', value: '98/100', note: 'Keywords optimized' },
+  { label: 'Matches', value: '18 Jobs', note: 'Top verified openings' },
+  { label: 'Status', value: 'Job Ready', note: 'Interviewing with teams' },
 ]
 
 export const timeline: string[] = [
-  'Error detected on /billing',
-  'Severity locked to P1',
-  'Core Web assigned',
-  'Team chat opened',
-  'AI suggests session patch',
-  'Postmortem drafted',
+  'Resume uploaded & analyzed',
+  'ATS score boosted to 98%',
+  'Full-stack mock interview initiated',
+  'AI feedback generated with score 94%',
+  '18 matched job applications submitted',
+  'First round scheduled with hiring team',
 ]
 
 export const teamMessages: TeamMessage[] = [
   {
-    name: 'Manager',
-    text: 'Assigning Core Web. Keep all updates in this incident thread.',
+    name: 'Candidate',
+    text: 'Practicing for my Senior Frontend Engineer interview tomorrow.',
   },
   {
-    name: 'CONCH AI',
-    text: 'Likely cause: expired refresh token retrying without backoff. Check auth/session.js.',
+    name: 'Karyam AI',
+    text: 'Solid grasp of React concurrency! Let us refine your explanation of system design trade-offs.',
   },
   {
-    name: 'Developer',
-    text: 'Patch is live on staging. Logs are clean for the last 8 minutes.',
+    name: 'Recruiter',
+    text: 'Candidate readiness verified (Score: 94%). Forwarded to the engineering lead.',
   },
 ]
 
 export const cockpitPanels: CockpitPanel[] = [
-  { label: 'Events', value: '1,482', tone: 'hot' },
-  { label: 'Affected users', value: '38%', tone: 'warn' },
-  { label: 'Trace depth', value: '7 layers', tone: 'calm' },
+  { label: 'Interviews Held', value: '14,800+', tone: 'hot' },
+  { label: 'Offer Rate', value: '89%', tone: 'warn' },
+  { label: 'AI Accuracy', value: '99.2%', tone: 'calm' },
 ]

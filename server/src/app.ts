@@ -10,7 +10,9 @@ import errorHandler from "./shared/middlewares/error.middleware.js";
 import { setupSwagger } from "./shared/swagger.js";
 
 const serverDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const publicDirectory = path.join(serverDirectory, "public");
+const publicDirectory = existsSync(path.join(process.cwd(), "public", "index.html"))
+    ? path.join(process.cwd(), "public")
+    : path.join(serverDirectory, "public");
 const frontendIndex = path.join(publicDirectory, "index.html");
 
 // function to make the app

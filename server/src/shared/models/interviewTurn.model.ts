@@ -13,6 +13,8 @@ export interface IAnswerInfo {
 export interface IRatingInfo {
     score: number;
     feedback: string;
+    whatWentWell?: string;
+    whatCouldBeBetter?: string;
     ratedAt: Date;
 }
 
@@ -45,6 +47,8 @@ const ratingSchema = new Schema<IRatingInfo>(
     {
         score: { type: Number, min: 0, max: 10, required: true },
         feedback: { type: String, required: true },
+        whatWentWell: { type: String, default: "" },
+        whatCouldBeBetter: { type: String, default: "" },
         ratedAt: { type: Date, default: Date.now },
     },
     { _id: false }

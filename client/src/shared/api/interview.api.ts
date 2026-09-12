@@ -13,6 +13,11 @@ import type {
   SseMetadataEvent,
   SseAudioChunkEvent,
   SseDoneEvent,
+  JdWorkspaceData,
+  UploadResumeForJdResponse,
+  AtsAnalysis,
+  AtsRateLimit,
+  UserSessionsResponse,
 } from '../types/interview.types'
 
 export const interviewApi = {
@@ -31,8 +36,20 @@ export const interviewApi = {
     return apiClient.get<ResumeDetails>(`/api/resumes/${id}`)
   },
 
+  async deleteResume(id: string): Promise<{ success: boolean; message: string }> {
+    return apiClient.delete<{ success: boolean; message: string }>(`/api/resumes/${id}`)
+  },
+
   async getUserJobDescriptions(): Promise<{ jobDescriptions: JobDescriptionDetails[]; latest: JobDescriptionDetails | null }> {
     return apiClient.get<{ jobDescriptions: JobDescriptionDetails[]; latest: JobDescriptionDetails | null }>('/api/job-descriptions')
+  },
+
+  async deleteJobDescription(id: string): Promise<{ success: boolean; message: string }> {
+    return apiClient.delete<{ success: boolean; message: string }>(`/api/job-descriptions/${id}`)
+  },
+
+  async getUserSessions(): Promise<UserSessionsResponse> {
+    return apiClient.get<UserSessionsResponse>('/api/interview-sessions')
   },
 
   async createJobDescriptionFromText(payload: JobDescriptionPastedPayload): Promise<JobDescriptionResponse> {
@@ -52,6 +69,30 @@ export const interviewApi = {
     return apiClient.get<JobDescriptionDetails>(`/api/job-descriptions/${id}`)
   },
 
+  async getJdWorkspace(id: string): Promise<JdWorkspaceData> {
+    return apiClient.get<JdWorkspaceData>(`/api/job-descriptions/${id}/workspace`)
+  },
+
+  async uploadResumeForJd(id: string, file: File): Promise<UploadResumeForJdResponse> {
+    const formData = new FormData()
+    formData.append('file', file)
+    return apiClient.post<UploadResumeForJdResponse>(`/api/job-descriptions/${id}/resumes`, formData)
+  },
+
+  async analyzeLibraryResumeForJd(id: string, resumeId: string): Promise<UploadResumeForJdResponse> {
+    const formData = new FormData()
+    formData.append('resumeId', resumeId)
+    return apiClient.post<UploadResumeForJdResponse>(`/api/job-descriptions/${id}/resumes`, formData)
+  },
+
+  async getAtsAnalysisVersion(id: string, analysisId: string): Promise<AtsAnalysis> {
+    return apiClient.get<AtsAnalysis>(`/api/job-descriptions/${id}/ats-history/${analysisId}`)
+  },
+
+  async getAtsRateLimit(): Promise<AtsRateLimit> {
+    return apiClient.get<AtsRateLimit>('/api/job-descriptions/rate-limit')
+  },
+
   async createInterviewSession(payload: CreateSessionPayload): Promise<CreateSessionResponse> {
     return apiClient.post<CreateSessionResponse>('/api/interview-sessions', payload)
   },
@@ -66,7 +107,15 @@ export const interviewApi = {
 
   async submitTurnAnswer(sessionId: string, turnIndex: number, audioBlob: Blob): Promise<TurnAnswerResponse> {
     const formData = new FormData()
-    formData.append('audio', audioBlob, 'candidate-answer.wav')
+
+    // Use the blob's actual MIME type and a correct file extension
+    const mimeType = audioBlob.type || 'audio/webm'
+    let ext = 'webm'
+    if (mimeType.includes('wav')) ext = 'wav'
+    else if (mimeType.includes('mp4') || mimeType.includes('m4a')) ext = 'mp4'
+    else if (mimeType.includes('ogg')) ext = 'ogg'
+
+    formData.append('audio', audioBlob, `candidate-answer.${ext}`)
 
     const res = await apiClient.request(`/api/interview-sessions/${sessionId}/turns/${turnIndex}/answer`, {
       method: 'POST',
@@ -80,6 +129,7 @@ export const interviewApi = {
 
     return res.json()
   },
+
 
   async endInterviewSession(sessionId: string): Promise<{ sessionId: string; status: string; report: SessionReport }> {
     const res = await apiClient.request(`/api/interview-sessions/${sessionId}/end`, {
