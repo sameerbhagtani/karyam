@@ -91,7 +91,7 @@ export default function VideoRevealSection() {
       className={styles.videoSection}
       id="incident-flow"
       ref={sectionRef}
-      aria-label="CONCH product preview"
+      aria-label="Karyam product preview"
     >
       <div className={styles.videoStage}>
         <div className={styles.videoFrame} ref={frameRef}>

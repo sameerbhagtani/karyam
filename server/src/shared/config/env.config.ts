@@ -44,6 +44,7 @@ const envSchema = z.object({
     PINECONE_INDEX_NAME: z.string().default(envConstants.PINECONE_INDEX_NAME),
     PINECONE_HOST: z.string().default(envConstants.PINECONE_HOST),
     SARVAM_API_KEY: z.string().default(envConstants.SARVAM_API_KEY),
+    RAPIDAPI_KEY: z.string().default(envConstants.RAPIDAPI_KEY),
 });
 
 // parsing and validating environment variables

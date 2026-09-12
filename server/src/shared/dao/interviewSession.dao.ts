@@ -52,6 +52,13 @@ class InterviewSessionDao {
     async findSessionsByUserId(userId: string | Types.ObjectId): Promise<IInterviewSession[]> {
         return await this.SessionModel.find({ userId }).sort({ createdAt: -1 });
     }
+
+    async findLatestSessionByJdIdAndUserId(
+        jdId: string | Types.ObjectId,
+        userId: string | Types.ObjectId
+    ): Promise<IInterviewSession | null> {
+        return await this.SessionModel.findOne({ jdId, userId }).sort({ createdAt: -1 });
+    }
 }
 
 export default InterviewSessionDao;

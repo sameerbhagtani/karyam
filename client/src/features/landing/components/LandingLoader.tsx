@@ -150,7 +150,7 @@ export default function LandingLoader() {
     <div
       className={`${styles.loader} ${phase === 'morphing' ? styles.morphing : ''}`}
       style={morphStyle}
-      aria-label="Loading CONCH"
+      aria-label="Loading Karyam"
       role="status"
     >
       <div className={styles.markWrap}>

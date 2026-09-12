@@ -12,6 +12,17 @@ const router = express.Router();
 const sessionController = new InterviewSessionController();
 
 /*
+    @route GET /api/interview-sessions
+    @desc Get all interview sessions for the authenticated user
+    @access Private
+*/
+router.get(
+    "/",
+    authMiddleware,
+    sessionController.getUserSessions
+);
+
+/*
     @route POST /api/interview-sessions
     @desc Create a new interview session and kick off embedding
     @access Private

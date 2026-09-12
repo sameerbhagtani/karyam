@@ -109,7 +109,7 @@ export default function HeroSection() {
   }
 
   return (
-    <section className={styles.hero} ref={heroRef} aria-label="CONCH inspiration orbit">
+    <section className={styles.hero} ref={heroRef} aria-label="Karyam career orbit">
       <div className={styles.orbitStage} aria-hidden="true">
         {orbitRings.map((ring, ringIndex) => (
           <div className={styles.ring} key={ring.radius}>
@@ -145,11 +145,14 @@ export default function HeroSection() {
       </div>
 
       <div className={styles.center} onMouseEnter={boostOrbit}>
-        <p>CONCH</p>
-        <h1>All in one platform for Web developers</h1>
+        <p>Karyam</p>
+        <h1>
+          Rejections?
+          <span className={styles.headlineSecondLine}>Not anymore!</span>
+        </h1>
         <div className={styles.actions}>
           <Link to="/prep">Practice Mock Interview</Link>
-          <a href="#command-room">Explore Flow</a>
+          <a href="#command-room">Explore Platform</a>
         </div>
       </div>
     </section>

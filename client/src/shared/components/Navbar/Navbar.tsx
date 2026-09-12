@@ -20,19 +20,19 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: 'Mock Interview', href: '/prep' },
-  { label: 'Docs', href: '/docs' },
-  { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Resume Builder', href: '/prep' },
+  { label: 'Job Matching', href: '#signal' },
+  { label: 'How It Works', href: '#command-room' },
 ]
 
 const secondaryItems: NavItem[] = [
-  { label: 'About', href: '/about' },
-  { label: 'Docs', href: '/docs' },
-  { label: 'Contact', href: '/contact' },
-  { label: 'Templates', href: '/create' },
-  { label: 'Builder', href: '/create' },
-  { label: 'Deployment', href: '/dashboard/deployments' },
-  { label: 'Support', href: '/docs' },
+  { label: 'Practice Drills', href: '/prep' },
+  { label: 'AI Scorecard', href: '/prep' },
+  { label: 'Career Flow', href: '#command-room' },
+  { label: 'Job Readiness', href: '#signal' },
+  { label: 'Candidate Login', href: '/login' },
+  { label: 'About Karyam', href: '/about' },
+  { label: 'Contact & Help', href: '/contact' },
 ]
 
 import { useLocation, Link } from 'react-router-dom'
@@ -194,7 +194,7 @@ export default function Navbar() {
             <Link
               className={styles.logoLink}
               to="/"
-              aria-label="CONCH home"
+              aria-label="Karyam home"
               data-nav-logo-target="primary"
             >
               <Logo revealOnHover />
@@ -292,7 +292,7 @@ export default function Navbar() {
               {secondaryItems.map((item, index) => (
                 <a
                   href={item.href}
-                  key={item.href}
+                  key={item.label}
                   ref={(node) => {
                     menuItemRefs.current[navItems.length + index + 1] = node
                   }}

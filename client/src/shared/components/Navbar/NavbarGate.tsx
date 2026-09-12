@@ -4,8 +4,16 @@ import Navbar from './Navbar'
 
 export default function NavbarGate() {
   const { pathname } = useLocation()
-  const hiddenOnRoutes = new Set(['/login', '/signup', '/create'])
-  const isDashboardRoute = pathname.startsWith('/dashboard')
+  const hiddenOnRoutes = new Set(['/login', '/signup', '/create', '/prep', '/dashboard', '/resumes', '/interviews', '/settings', '/job-descriptions'])
+  const isDashboardRoute =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/prep') ||
+    pathname.startsWith('/sessions') ||
+    pathname.startsWith('/jds') ||
+    pathname.startsWith('/resumes') ||
+    pathname.startsWith('/interviews') ||
+    pathname.startsWith('/settings') ||
+    pathname.startsWith('/job-descriptions')
   const isPublicSiteRoute = pathname.startsWith('/site')
 
   useEffect(() => {

@@ -69,5 +69,11 @@
     "glob": "^13.0.6",
     "test-exclude": "^7.0.1",
     "node-domexception": "npm:es-errors@^1.3.0"
+  },
+  "allowScripts": {
+    "@parcel/watcher@2.6.0": true,
+    "@scarf/scarf@1.4.0": true,
+    "esbuild@0.28.2": true,
+    "unrs-resolver@1.12.2": true
   }
 }

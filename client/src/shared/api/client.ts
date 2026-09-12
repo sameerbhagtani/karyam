@@ -167,6 +167,11 @@ class ApiClient {
     return this.parseResponse<T>(res)
   }
 
+  public async delete<T>(url: string, init?: RequestInit): Promise<T> {
+    const res = await this.request(url, { ...init, method: 'DELETE' })
+    return this.parseResponse<T>(res)
+  }
+
   private async parseResponse<T>(res: Response): Promise<T> {
     const json = await res.json().catch(() => ({}))
     if (!res.ok) {

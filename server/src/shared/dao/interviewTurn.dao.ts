@@ -37,11 +37,23 @@ class InterviewTurnDao {
         turnIndex: number,
         score: number,
         feedback: string,
-        ratedAt: Date = new Date()
+        ratedAt: Date = new Date(),
+        whatWentWell?: string,
+        whatCouldBeBetter?: string
     ): Promise<IInterviewTurn | null> {
         return await this.TurnModel.findOneAndUpdate(
             { sessionId, turnIndex },
-            { $set: { rating: { score, feedback, ratedAt } } },
+            {
+                $set: {
+                    rating: {
+                        score,
+                        feedback,
+                        ...(whatWentWell ? { whatWentWell } : {}),
+                        ...(whatCouldBeBetter ? { whatCouldBeBetter } : {}),
+                        ratedAt,
+                    },
+                },
+            },
             { new: true }
         );
     }

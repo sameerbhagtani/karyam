@@ -6,6 +6,8 @@ import BadRequest from "../../shared/errors/BadRequest.error.js";
 import NotFound from "../../shared/errors/NotFound.error.js";
 import textExtractionService from "../../shared/services/textExtraction.service.js";
 import s3Service from "../../shared/services/s3.service.js";
+import vectorService from "../../shared/services/vector.service.js";
+import logger from "../../shared/config/logger.config.js";
 
 export class ResumeController {
     private resumeDao: ResumeDao;
@@ -44,13 +46,31 @@ export class ResumeController {
             originalFilename: originalname,
             s3Key,
             mimeType: mimetype,
+            fileSize: buffer.length,
             extractedText,
         });
 
-        // 5. Return PRD specified output schema
+        // 5. Asynchronously chunk and embed into dedicated Pinecone resume namespace (non-blocking)
+        vectorService
+            .embedAndUpsertDocument(
+                `resume-${resume._id}`,
+                extractedText,
+                "resume",
+                resume._id.toString(),
+                userId
+            )
+            .catch((err) => {
+                logger.warn(
+                    { err: err?.message, resumeId: resume._id.toString() },
+                    "Async resume embedding error in uploadResume"
+                );
+            });
+
+        // 6. Return PRD specified output schema
         return res.status(201).json({
             resumeId: resume._id.toString(),
             originalFilename: resume.originalFilename,
+            fileSize: resume.fileSize,
             status: "processed",
         });
     };
@@ -72,7 +92,9 @@ export class ResumeController {
             resumeId: resume._id.toString(),
             originalFilename: resume.originalFilename,
             mimeType: resume.mimeType,
+            fileSize: resume.fileSize,
             s3Key: resume.s3Key,
+            extractedText: resume.extractedText,
             createdAt: resume.createdAt,
         });
     };
@@ -89,6 +111,7 @@ export class ResumeController {
                 resumeId: r._id.toString(),
                 originalFilename: r.originalFilename,
                 mimeType: r.mimeType,
+                fileSize: r.fileSize,
                 createdAt: r.createdAt,
             })),
             latest: resumes[0]
@@ -96,9 +119,30 @@ export class ResumeController {
                       resumeId: resumes[0]._id.toString(),
                       originalFilename: resumes[0].originalFilename,
                       mimeType: resumes[0].mimeType,
+                      fileSize: resumes[0].fileSize,
                       createdAt: resumes[0].createdAt,
                   }
                 : null,
+        });
+    };
+
+    deleteResume = async (req: Request & { user?: Record<string, unknown> }, res: Response) => {
+        const userId = (req.user?.userId || req.user?._id) as string;
+        const id = req.params.id as string;
+
+        if (!Types.ObjectId.isValid(id)) {
+            throw new BadRequest("Invalid resume ID format");
+        }
+
+        const resume = await this.resumeDao.findResumeById(id);
+        if (!resume || resume.userId.toString() !== userId) {
+            throw new NotFound("Resume not found");
+        }
+
+        await this.resumeDao.deleteResumeById(id);
+        return res.status(200).json({
+            success: true,
+            message: "Resume deleted successfully",
         });
     };
 }

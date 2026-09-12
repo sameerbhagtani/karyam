@@ -8,8 +8,13 @@ import LandingPage from './features/landing/components/LandingPage'
 import LoginPage from './features/auth/pages/LoginPage'
 import SignupPage from './features/auth/pages/SignupPage'
 import InterviewPrepPage from './features/interview/pages/InterviewPrepPage'
+import KaryamDashboard from './features/dashboard/KaryamDashboard'
 import SessionReportPage from './features/interview/pages/SessionReportPage'
-import InterviewRoomPage from './features/interview/pages/InterviewRoomPage'
+import { InterviewRoomPage } from './features/interview/pages/InterviewRoomPage'
+import JdWorkspacePage from './features/dashboard/components/JdWorkspacePage'
+import ProtectedRoute from './shared/components/Auth/ProtectedRoute'
+import PublicOnlyRoute from './shared/components/Auth/PublicOnlyRoute'
+import PWAInstallPrompt from './shared/components/PWAInstallPrompt'
 import './globals.css'
 
 const queryClient = new QueryClient({
@@ -28,15 +33,37 @@ export default function App() {
         <AuthProvider>
           <BrowserRouter>
             <NavbarGate />
+            <PWAInstallPrompt />
             <Routes>
               <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/signup" element={<SignupPage />} />
-              <Route path="/prep" element={<InterviewPrepPage />} />
-              <Route path="/dashboard" element={<Navigate to="/prep" replace />} />
-              <Route path="/sessions/:id" element={<InterviewPrepPage />} />
-              <Route path="/sessions/:id/interview" element={<InterviewRoomPage />} />
-              <Route path="/sessions/:id/report" element={<SessionReportPage />} />
+
+              {/* Public only: logged-in users cannot access login/signup */}
+              <Route element={<PublicOnlyRoute />}>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+              </Route>
+
+              {/* Protected: guests cannot access prep, dashboard, and interview rooms without login */}
+              <Route element={<ProtectedRoute />}>
+                <Route path="/prep" element={<KaryamDashboard view="home" />} />
+                <Route path="/dashboard" element={<KaryamDashboard view="home" />} />
+                <Route path="/dashboard/resumes" element={<KaryamDashboard view="resumes" />} />
+                <Route path="/resumes" element={<KaryamDashboard view="resumes" />} />
+                <Route path="/dashboard/jds" element={<KaryamDashboard view="jds" />} />
+                <Route path="/job-descriptions" element={<KaryamDashboard view="jds" />} />
+                <Route path="/dashboard/job-hunt" element={<KaryamDashboard view="job-hunt" />} />
+                <Route path="/job-hunt" element={<KaryamDashboard view="job-hunt" />} />
+                <Route path="/dashboard/interviews" element={<KaryamDashboard view="interviews" />} />
+                <Route path="/interviews" element={<KaryamDashboard view="interviews" />} />
+                <Route path="/dashboard/settings" element={<KaryamDashboard view="settings" />} />
+                <Route path="/settings" element={<KaryamDashboard view="settings" />} />
+                <Route path="/jds/:id" element={<JdWorkspacePage />} />
+                <Route path="/sessions/:id" element={<InterviewPrepPage />} />
+                <Route path="/sessions/:id/interview" element={<InterviewRoomPage />} />
+                <Route path="/sessions/:id/report" element={<SessionReportPage />} />
+                <Route path="/interviews/:id/report" element={<SessionReportPage />} />
+              </Route>
+
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>

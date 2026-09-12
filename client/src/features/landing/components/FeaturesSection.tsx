@@ -116,8 +116,8 @@ export default function FeaturesSection() {
     <section className={styles.featuresSection} id="signal" ref={sectionRef}>
       <div className={styles.featuresStage}>
         <h2 className={styles.featuresTitle} ref={titleRef}>
-          Making things 
-          <span>Easy</span>
+          Get Job-Ready 
+          <span>With AI</span>
         </h2>
 
         <div className={styles.featureCards} aria-hidden="true">

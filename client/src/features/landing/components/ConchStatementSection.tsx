@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import vectorMark from '@/assets/svg/Vector 1.svg'
-import ConchModelViewer from './ConchModelViewer'
+// import ConchModelViewer from './ConchModelViewer'
+import NexbotViewer from './NexbotViewer'
 import styles from './ConchStatementSection.module.css'
 
 gsap.registerPlugin(ScrollTrigger)
@@ -156,7 +157,7 @@ export default function ConchStatementSection() {
       className={styles.statementSection}
       id="deploy"
       ref={sectionRef}
-      aria-label="What CONCH does"
+      aria-label="What Karyam does"
     >
       <svg
         className={styles.drawingMark}
@@ -175,33 +176,31 @@ export default function ConchStatementSection() {
       <div className={styles.statementInner}>
         <div className={styles.copyBlock}>
           <p>
-            We help teams <strong>build</strong> sharp, responsive websites and
+            We help candidates <strong>build</strong> ATS-optimized, high-impact resumes and
             <span
               ref={deployRef}
               className={`${styles.highlight} ${touchedTargets[0] ? styles.highlightTouched : ''}`}
             >
               {' '}
-              deploy them with confidence
+              apply with total confidence
             </span>
             .
           </p>
 
           <p>
-            Once your site is live, CONCH keeps watch. We detect errors, surface the
-            real cause, and turn confusing failures into
+            Before your interview, Karyam gets you ready. Our AI runs realistic mock interviews, pinpoints weak spots, and turns hesitation into
             <span
               ref={actionRef}
               className={`${styles.highlight} ${touchedTargets[1] ? styles.highlightTouched : ''}`}
             >
               {' '}
-              clear action
+              winning answers
             </span>
             .
           </p>
 
           <p>
-            From alerts to team assignment, we help the right people solve the right
-            problems faster, so your business can
+            From targeted skill prep to automated job matching, we connect ready talent with the right opportunities, so you can
             <span
               ref={easeRef}
               className={`${styles.highlightWide} ${
@@ -209,23 +208,24 @@ export default function ConchStatementSection() {
               }`}
             >
               {' '}
-              move on with ease
+              get hired with ease
             </span>
             .
           </p>
         </div>
 
         <h2 className={styles.heroLine}>
-          CONCH is a{' '}
+          Karyam is your{' '}
           <span
             ref={headlineRef}
             className={touchedTargets[3] ? styles.heroLineTouched : undefined}
           >
-            website command platform.
+            AI career acceleration platform.
           </span>
         </h2>
 
-        <ConchModelViewer className={styles.modelViewer} />
+        {/* <ConchModelViewer className={styles.modelViewer} /> */}
+        <NexbotViewer />
         <div id="postmortem" aria-hidden="true" />
       </div>
     </section>

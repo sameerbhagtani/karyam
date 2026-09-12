@@ -13,9 +13,9 @@ export interface AuthVideoPanelProps {
 export const AuthVideoPanel: React.FC<AuthVideoPanelProps> = ({
   videoSrc = '/vdo.mp4',
   fallbackSrc = '/vdo.mp4',
-  badge = 'CONCH PLATFORM',
-  headline = 'AI-driven deployment & runtime command.',
-  subtext = 'Monitor errors, trace root causes, and deploy responsive sites through conversation.',
+  badge = 'KARYAM PLATFORM',
+  headline = 'AI-driven career readiness & interview command.',
+  subtext = 'Master mock interviews, craft ATS-ready resumes, and land verified job matches through AI coaching.',
   tag = 'SYSTEM OPERATIONAL',
 }) => {
   const [currentSrc, setCurrentSrc] = useState(videoSrc)
